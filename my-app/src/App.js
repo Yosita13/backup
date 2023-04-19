@@ -28,7 +28,7 @@ const App = () => {
   return (
       <Router>
           <Switch>
-              <Route exact path="/Page/admindashboard" render={(props) => (<Admindashboard/>)}></Route>
+              {/* <Route exact path="/Page/admindashboard" render={(props) => (<Admindashboard/>)}></Route>
               <Route path="/Page/estimate" render={(props) => (<Estimates/>)}></Route>
               <Route path="/Page/home" render={(props) => (<Home/>)}></Route>
               <Route path="/Page/header" render={(props) => (<Header/>)}></Route>
@@ -40,6 +40,9 @@ const App = () => {
               <Route path="/Page/test" render={(props) => (<Test/>)}></Route>
               <Route path="/Page/activity" render={(props) => (<Activity/>)}></Route>
               <Route path="/webapp/userhome" render={(props) => (<Userhome/>)}></Route>
+              <Redirect to={{pathname: '/Page/admindashboard'}}/> */}
+
+              <Route exact path="/webapp/QR" render={(props) => (<QR/>)}></Route>
               <Route path="/webapp/QR" render={(props) => (<QR/>)}></Route>
               <Route path="/webapp/TakePhoto" render={(props) => (<TakePhoto/>)}></Route>
               <Route path="/webapp/RepairDetails" render={(props) => (<RepairDetails/>)}></Route>
@@ -48,9 +51,11 @@ const App = () => {
               <Route path="/webapp/uploadImage" render={(props) => (<UploadImage/>)}></Route>
               <Route path="/webapp/WebappHeader" render={(props) => (<WebappHeader/>)}></Route>
               <Route path= "/webapp/sendRepairFinish" render={(props) => (<SendRepairFinish/>)}></Route>
-              <Redirect to={{pathname: '/Page/admindashboard'}}/>
+              <Redirect to={{pathname: '/webapp/QR'}}/>
           </Switch>
       </Router>
+
+      
 
   )
 }
