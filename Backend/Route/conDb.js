@@ -1,12 +1,11 @@
-const { request } = require('express')
-const express = require('express')
+//const { request } = require('express')
+//const express = require('express')
 const connect = require('../Database/DB')
 const router = require('express-promise-router')()
 const multer = require('multer');
 const path = require('path');
 const nodemailer = require('nodemailer');
-const dotenv = require('dotenv');
-dotenv.config();
+
 
 
 
@@ -75,7 +74,7 @@ router.put ("/update/:admin_id" ,(req,res,next) => {
     const admin_id = req.body.admin_id;
     
     console.log('edit',req.body)
-    connect.query('UPDATE CMMS.tbl_admin SET admin_name=?,admin_email=?,admin_password=?,admin_phone=?,admin_address=?,admin_designation=?,created_timestamp=now(),updated_timestamp=now() WHERE admin_id = ?',[admin_name,admin_email,admin_password,admin_phone,admin_address,admin_designation,admin_id,created_timestamp,updated_timestamp],
+    connect.query('UPDATE device_asset.tbl_admin SET admin_name=?,admin_email=?,admin_password=?,admin_phone=?,admin_address=?,admin_designation=?,created_timestamp=now(),updated_timestamp=now() WHERE admin_id = ?',[admin_name,admin_email,admin_password,admin_phone,admin_address,admin_designation,admin_id,created_timestamp,updated_timestamp],
     (err,result) => {
         if (err){
             console.log(err);

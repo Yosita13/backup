@@ -1,13 +1,13 @@
 const mysql = require('mysql');
 
-const connection = mysql.createConnection({
-    host: '192.168.241.72',
+const connection = mysql.createPool({
+    host: '68.178.227.196',
     user: 'efinFP',
     password: 'efinFP',
-    database: 'CMMS'
+    database: 'device_asset'
 });
 
-connection.connect((err) => {
+connection.getConnection((err) => {
     if (!!err) {
         console.log(err);
     } else {
