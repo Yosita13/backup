@@ -11,8 +11,8 @@ import '../Entryfile/imagepath';
 import Header from '../initialpage/Sidebar/header';
 import Sidebar from '../initialpage/Sidebar/sidebar';
 import "../Page/index.css"
-import axios from 'axios';
-
+//import axios from 'axios';
+import {axiosCMMS as axios} from '../config/axios';
 
 import {
   BarChart, Bar, Cell, ResponsiveContainer,
@@ -82,7 +82,7 @@ const linechartdata = [
 
   //getAdmin 
   useEffect(() => {
-    fetch('http://localhost:5000/DB/tbl_admin')
+    fetch('/DB/tbl_admin')
       .then(response => response.json())
       .then(data => setOptions(data))
       .catch(error => console.log(error));
@@ -94,7 +94,7 @@ const linechartdata = [
 
   // const getAdmin = async () => {
   //   try {
-  //     const { data } = await axios.get('http://localhost:5000/DB/tbl_admin')
+  //     const { data } = await axios.get('/DB/tbl_admin')
   //      console.log(data.length)
   //     setAdmin(data)
   //   } catch (error) {
@@ -112,7 +112,7 @@ const linechartdata = [
 
   // const getAdmin = async () => {
   //   try {
-  //     const { data } = await axios.get('http://localhost:5000/DB/tbl_admin')
+  //     const { data } = await axios.get('/DB/tbl_admin')
   //     // console.log(data.length)
   //     setAdmin(data)
   //   } catch (error) {
@@ -130,7 +130,7 @@ const linechartdata = [
 
   const getAdmin = async () => {
     try {
-      const { data } = await axios.get('http://localhost:5000/DB/get/get/for/join')
+      const { data } = await axios.get('/DB/get/get/for/join')
 
       // console.log('help',data.length)
       setData(data)
@@ -151,7 +151,7 @@ const linechartdata = [
 
     console.log('editstatus', editStatus);
     console.log('editstatus', priority);
-    const { data } = axios.get(`http://localhost:5000/DB/get/status/${editStatus}`).then((response) => {
+    const { data } = axios.get(`/DB/get/status/${editStatus}`).then((response) => {
       const defaultValue = {
         Priority:priority ,
         Status: Status,
@@ -172,7 +172,7 @@ const linechartdata = [
     form.resetFields();
     console.log('Received values of form: ', values);
     try {
-      const { data } = await axios.put(`http://localhost:5000/DB/update/status/${editStatus}`,
+      const { data } = await axios.put(`/DB/update/status/${editStatus}`,
         {
           id: values.editStatus,
           status: values.Status,
@@ -226,7 +226,7 @@ const linechartdata = [
     //setIsModalOpen(false);
     hideModal2()
 
-    const { data } = axios.post('http://localhost:5000/DB/sendEmail', {
+    const { data } = axios.post('/DB/sendEmail', {
       status: Status,
       employee_email: values
     })

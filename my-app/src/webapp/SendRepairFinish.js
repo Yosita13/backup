@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+//import axios from 'axios';
+import { axiosCMMS as axios } from '../config/axios';
 import { Link, useLocation } from 'react-router-dom';
 import { Helmet } from "react-helmet";
 import { useHistory } from 'react-router-dom';
@@ -22,122 +23,122 @@ function SendRepairFinish() {
 
     console.log('ID of user', location.state);
 
-    const [isSucces, setSuccess] = useState(null);
+    // const [isSucces, setSuccess] = useState(null);
 
-    const [picture, setPicture] = useState({
-        file: [],
-        filepreview: null,
-    });
+    // const [picture, setPicture] = useState({
+    //     file: [],
+    //     filepreview: null,
+    // });
 
-    const [userInfo, setuserInfo] = useState({
-        file: [],
-        filepreview: null,
-    });
+    // const [userInfo, setuserInfo] = useState({
+    //     file: [],
+    //     filepreview: null,
+    // });
 
-    const [postImage, setPostImage] = useState({
-        myFile: "",
-    });
+    // const [postImage, setPostImage] = useState({
+    //     myFile: "",
+    // });
 
 
     const createImage = (newImage) => console.log('newimg', newImage);;
 
-    const createPost = async (post) => {
-        try {
-            await createImage(post);
-        } catch (error) {
-            console.log(error.message);
-        }
-    };
+    // const createPost = async (post) => {
+    //     try {
+    //         await createImage(post);
+    //     } catch (error) {
+    //         console.log(error.message);
+    //     }
+    // };
 
-    const handleSubmit = (e) => {
-        // axios.post("http://localhost:5000/DB/tbl_list_repair2", postImage)
-        // .then(res=>console.log(res))
-        // e.preventDefault();
-        console.log('postImage', postImage);
+    // const handleSubmit = (e) => {
+    //     // axios.post("http://localhost:5000/DB/tbl_list_repair2", postImage)
+    //     // .then(res=>console.log(res))
+    //     // e.preventDefault();
+    //     console.log('postImage', postImage);
 
-        var blob = new Blob(['1678684514063-8853042000109.jpg'], { type: 'image/jpeg' });
-        var blobUrl = URL.createObjectURL(blob);
-        console.log('blob', blob);
-        console.log('blobURL', blobUrl);
-        setPicture({
-            ...picture,
-            file: blob,
-            filepreview: blobUrl,
-        });
-        setPicture(blobUrl);
-        createPost(postImage);
+    //     var blob = new Blob(['1678684514063-8853042000109.jpg'], { type: 'image/jpeg' });
+    //     var blobUrl = URL.createObjectURL(blob);
+    //     console.log('blob', blob);
+    //     console.log('blobURL', blobUrl);
+    //     setPicture({
+    //         ...picture,
+    //         file: blob,
+    //         filepreview: blobUrl,
+    //     });
+    //     setPicture(blobUrl);
+    //     createPost(postImage);
 
-    };
-    console.log('pic', picture);
-    console.log('useinfo', userInfo);
+    // };
+    // console.log('pic', picture);
+    // console.log('useinfo', userInfo);
 
-    const convertToBase64 = (file) => {
-        console.log('file', file);
-        return new Promise((resolve, reject) => {
-            const fileReader = new FileReader();
-            fileReader.readAsDataURL(file);
-            fileReader.onload = () => {
-                resolve(fileReader.result);
-            };
-            fileReader.onerror = (error) => {
-                reject(error);
-            };
-        });
-    };
-
-
-
-    const handleInputChange = async (event) => {
-        setuserInfo({
-            ...userInfo,
-            file: event.target.files[0],
-            filepreview: URL.createObjectURL(event.target.files[0]),
-        });
-        console.log('event', event.target.files[0]);
-
-        const file = event.target.files[0];
-        console.log('file0', file);
-        const base64 = await convertToBase64(file);
-        setPostImage({ ...postImage, myFile: base64 });
-
-    }
+    // const convertToBase64 = (file) => {
+    //     console.log('file', file);
+    //     return new Promise((resolve, reject) => {
+    //         const fileReader = new FileReader();
+    //         fileReader.readAsDataURL(file);
+    //         fileReader.onload = () => {
+    //             resolve(fileReader.result);
+    //         };
+    //         fileReader.onerror = (error) => {
+    //             reject(error);
+    //         };
+    //     });
+    // };
 
 
 
-    const submit = async () => {
-        const formdata = new FormData();
-        var blob = new Blob([userInfo], { type: 'image/jpeg' });
-        var blobUrl = URL.createObjectURL(blob);
-        console.log('blob', blob);
-        console.log('blobURL', blobUrl);
-        formdata.append('avatar', userInfo.file);
-        formdata.append('id', id);
-        const image = { headers: { "Content-Type": "multipart/form-data" } }
+    // const handleInputChange = async (event) => {
+    //     setuserInfo({
+    //         ...userInfo,
+    //         file: event.target.files[0],
+    //         filepreview: URL.createObjectURL(event.target.files[0]),
+    //     });
+    //     console.log('event', event.target.files[0]);
 
-        console.log('id');
+    //     const file = event.target.files[0];
+    //     console.log('file0', file);
+    //     const base64 = await convertToBase64(file);
+    //     setPostImage({ ...postImage, myFile: base64 });
 
-        // axios.post("http://localhost:5000/DB/tbl_list_repair2", blobUrl, image)
-        axios.post("http://localhost:5000/DB/tbl_list_repair2", {
-            body: {
-                userInfo,
-                id
-            }
-        })
-            .then(res => { // then print response status
-                console.warn(res);
-                console.log('res', res)
-                setImageID(res.data.insertId)
-                if (res.data.success === 1) {
-                    setSuccess("Image upload successfully");
-                }
-                // console.log('res.data',res.data);
-                // const file = new Blob ([res.data],{type:'image/jpeg'})
+    // }
 
-                history.push({ pathname: '/webapp/RepairDetails', state: res.data.insertId })
-            })
 
-        //history.push({pathname:'/webapp/RepairDetails',state:imageID})
-    }
+
+    // const submit = async () => {
+    //     const formdata = new FormData();
+    //     var blob = new Blob([userInfo], { type: 'image/jpeg' });
+    //     var blobUrl = URL.createObjectURL(blob);
+    //     console.log('blob', blob);
+    //     console.log('blobURL', blobUrl);
+    //     formdata.append('avatar', userInfo.file);
+    //     formdata.append('id', id);
+    //     const image = { headers: { "Content-Type": "multipart/form-data" } }
+
+    //     console.log('id');
+
+    //     // axios.post("http://localhost:5000/DB/tbl_list_repair2", blobUrl, image)
+    //     axios.post("/DB/tbl_list_repair2", {
+    //         body: {
+    //             userInfo,
+    //             id
+    //         }
+    //     })
+    //         .then(res => { // then print response status
+    //             console.warn(res);
+    //             console.log('res', res)
+    //             setImageID(res.data.insertId)
+    //             if (res.data.success === 1) {
+    //                 setSuccess("Image upload successfully");
+    //             }
+    //             // console.log('res.data',res.data);
+    //             // const file = new Blob ([res.data],{type:'image/jpeg'})
+
+    //             history.push({ pathname: '/webapp/RepairDetails', state: res.data.insertId })
+    //         })
+
+    //     //history.push({pathname:'/webapp/RepairDetails',state:imageID})
+    // }
 
     return (
 

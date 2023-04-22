@@ -1,11 +1,12 @@
-//const { request } = require('express')
-//const express = require('express')
+const { request } = require('express')
+const express = require('express')
 const connect = require('../Database/DB')
 const router = require('express-promise-router')()
 const multer = require('multer');
 const path = require('path');
 const nodemailer = require('nodemailer');
-
+const dotenv = require('dotenv');
+dotenv.config();
 
 
 
@@ -196,9 +197,9 @@ const storage = multer.diskStorage({
 //-------post image from uplodaimage.js to database ----------------------------------------------
 router.post('/tbl_list_repair2', async (req, res) => {	
     try {
-        console.log(req.body.body.userInfo.filepreview);
+        console.log(req.body.body.imgs);
         console.log(req.body);
-        const image = req.body.body.userInfo.filepreview;
+        const image = req.body.body.imgs;
        
            const id = req.body.body.id
        
@@ -390,7 +391,7 @@ router.get ("/get/status/device/:device_id" ,(req,res,next) => {
     const device_id = req.params.device_id;
     console.log('555',req.params)
 
-    connect.query('SELECT * FROM tbl_repair WHERE device_id = ? ',device_id,
+    connect.query('SELECT * FROM tbl_repair WHERE device_id = ? order by id desc',device_id,
     (err,rows) => {
         if (err){
             res.send(err)
@@ -398,7 +399,8 @@ router.get ("/get/status/device/:device_id" ,(req,res,next) => {
         else {
             Object.keys(rows).forEach(function (key) {
                 var row = rows[key];
-                res.send(row)
+                 res.send(row)
+                //console.log(rows);
                 
             })
             // console.log(rows);

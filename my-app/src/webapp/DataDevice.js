@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+//import axios from 'axios';
+import {axiosCMMS as axios} from '../config/axios'
 import LogoOnlineAssest from '../initialpage/Sidebar/img/LogoOnlineAssest.png';
 import { Button, Form } from 'antd';
 import { Link, useLocation, useHistory } from 'react-router-dom';
@@ -26,14 +27,14 @@ function DataDevice() {
 
     const getStatus = async () => {
         try {
-            const { data } = await axios.get(`http://localhost:5000/DB/getDataDevice/${location.state}`)
+            const { data } = await axios.get(`/DB/getDataDevice/${location.state}`)
             // console.log(data.length)
             setDetail(data)
         } catch (error) {
 
         }
     }
-    //console.log(detail)
+    console.log(detail)
 
 
 
@@ -63,7 +64,8 @@ function DataDevice() {
                                                     
                                                         <div className="card">
                                                             <div className="card-body">
-                                                        <div className="dash-widget-info">
+                                                        {detail&&<div className="dash-widget-info">
+                                                            
                                                             <h5>ID  :{detail.device_id}</h5>
                                                             <h5>Name : {detail.device_name}</h5>
                                                             <h5>Status : {detail.device_status}</h5>
@@ -75,7 +77,8 @@ function DataDevice() {
                                                             {/* <h5>License : {detail[0]?.license}</h5> */}
                                                             {/* <h3>{License.length}</h3> */}
                                                             {/* <span>License</span> */}
-                                                        </div>
+
+                                                        </div>}
                                                     </div>
                                                 </div>
 

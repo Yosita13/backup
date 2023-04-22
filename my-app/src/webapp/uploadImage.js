@@ -1,5 +1,6 @@
 import React, { useEffect,useState } from 'react';
-import axios from 'axios';
+//import axios from 'axios';
+import { axiosCMMS as axios } from '../config/axios';
 import { Link, useLocation } from 'react-router-dom';
 import { Helmet } from "react-helmet";
 import { useHistory } from 'react-router-dom';
@@ -11,16 +12,12 @@ function UploadImage() {
     let history = useHistory()
     const [imageID, setImageID] = useState("");
     const [data, setData] = useState();
+    const [imgs,setImgs] =useState()
 
     const location = useLocation()
-    
-    const id = location.state
-
-
-    console.log('ID of user', location.state);
-
+    const id = location.state 
+    //console.log('ID of user', location.state);
     const [isSucces, setSuccess] = useState(null);
-
     const [picture, setPicture] = useState({
         file: [],
         filepreview: null,
@@ -37,7 +34,6 @@ function UploadImage() {
     
    
     const createImage = (newImage) => console.log('newimg',newImage);;
-    
       const createPost = async (post) => {
         try {
           await createImage(post);
@@ -46,8 +42,6 @@ function UploadImage() {
         }
       };
 
-      
-    
       const handleSubmit = (e) => {
         // axios.post("http://localhost:5000/DB/tbl_list_repair2", postImage)
         // .then(res=>console.log(res))
@@ -86,40 +80,62 @@ function UploadImage() {
 
    
 
-    const handleInputChange = async (event) => {
-        setuserInfo({
-            ...userInfo,
-            file: event.target.files[0],
-            filepreview: URL.createObjectURL(event.target.files[0]),
-        });
-        console.log('event',event.target.files[0]);
+    // const handleInputChange = async (event) => {
+    //     setuserInfo({
+    //         ...userInfo,
+    //         file: event.target.files[0],
+    //         filepreview: URL.createObjectURL(event.target.files[0]),
+    //     });
+    //     console.log('event',event.target.files[0]);
 
-        const file = event.target.files[0];
-        console.log('file0',file);
-    const base64 = await convertToBase64(file);
-    setPostImage({ ...postImage, myFile: base64 });
+    //     const file = event.target.files[0];
+    //     console.log('file0',file);
+    // const base64 = await convertToBase64(file);
+    // setPostImage({ ...postImage, myFile: base64 });
 
+    // }
+      
+
+
+    const handleChnage=(e)=>{
+        console.log(e.target.files)
+
+        const data = new FileReader()
+
+        data.addEventListener('load',()=>{
+            setImgs(data.result)
+        })
+
+        data.readAsDataURL(e.target.files[0])
+     
     }
+   
+    console.log(imgs)
+    ;
+
+    
+       
+      
     
 
    
     const submit = async () => {
         
         const formdata = new FormData();
-        var blob = new Blob([userInfo], { type: 'image/jpeg' });
-        var blobUrl = URL.createObjectURL(blob);
-                console.log('blob',blob);
-                console.log('blobURL',blobUrl);
-        formdata.append('avatar', userInfo.file);
+        var blob = new Blob([imgs], { type: 'image/jpeg' });
+        // var blobUrl = URL.createObjectURL(blob);
+        //         console.log('blob',blob);
+        //         console.log('blobURL',blobUrl);
+        formdata.append('avatar', imgs.file);
         formdata.append('id', id);
         const image = { headers: { "Content-Type": "multipart/form-data" } }
 
         console.log('id',id);
 
         // axios.post("http://localhost:5000/DB/tbl_list_repair2", blobUrl, image)
-        axios.post("http://localhost:5000/DB/tbl_list_repair2",{
+        axios.post("/DB/tbl_list_repair2",{
             body:{
-                userInfo,
+                imgs,
                 id
             }
         })
@@ -169,14 +185,14 @@ function UploadImage() {
                                         <div className="form-row">
                                         {/* <label className="col-lg-12 col-form-label">Selete Image</label> */}
                                             <div className="col-lg-14">
-                                                <input type="file" className="form-control" name="upload_file" onChange={handleInputChange} /><br></br>
+                                                <input type="file" className="form-control" name="upload_file" onChange={handleChnage} /><br></br>
                                             </div>
 
                                             <div style={{ marginTop: '5px' }} className="submit-section">
                                                 <div className="form-row">
                                                     
-                                                {userInfo.filepreview !== null ?
-                                            <img className="previewimg" src={userInfo.filepreview} alt="UploadImage" />
+                                                {imgs !== null ?
+                                            <img className="previewimg" src={imgs} alt="UploadImage" />
                                             : null}
                                                     <Link to="/webapp/userhome" type="submit" className="btn btn-primary-gray submit-btn" > กลับ </Link>
 

@@ -4,7 +4,8 @@ import { Helmet } from "react-helmet";
 import { Link } from 'react-router-dom';
 import { Dropdown, Table, Tag } from 'antd';
 import { MoreOutlined } from "@ant-design/icons"
-import axios, { Axios } from 'axios';
+import {axiosCMMS as axios} from '../config/axios';
+//import axios, { Axios } from 'axios';
 //import 'antd/dist/antd.css';
 import { itemRender, onShowSizeChange } from "../Page/paginationfunction"
 //import "../../antdstyle.css"
@@ -73,7 +74,7 @@ const Employeeslist = ({Admin}) => {
     form.resetFields();
     console.log('Received values of form: ', values);
     try {
-      const { data } = await axios.put(`http://localhost:5000/DB/update/${values.admin_id}`,
+      const { data } = await axios.put(`/DB/update/${values.admin_id}`,
       { admin_id: values.admin_id,
         admin_name: values.admin_name,
         admin_email: values.admin_email,
@@ -146,7 +147,7 @@ const Employeeslist = ({Admin}) => {
 
   // const getAdmin = async () => {
   //   try {
-  //     const { data } = await axios.get('http://localhost:5000/DB/tbl_admin')
+  //     const { data } = await axios.get('/DB/tbl_admin')
   //     // console.log(data.length)
   //     setAdmin(data)
   //     console.log(data);
@@ -157,7 +158,7 @@ const Employeeslist = ({Admin}) => {
   const getEmployeesForDelete = (values) => {
     
     //console.log(values);
-      axios.get(`http://localhost:5000/DB/getEmployee/${values.admin_id}`).then((response) => {
+      axios.get(`/DB/getEmployee/${values.admin_id}`).then((response) => {
         //console.log('123',response.data.admin_name);
         console.log(response.data);
         setDataEmployee(response.data);
@@ -174,7 +175,7 @@ const Employeeslist = ({Admin}) => {
   const deleEmployees = (values) => {
     setForComfirmDelete(false)
     //console.log(admin_id);
-      axios.delete(`http://localhost:5000/DB/delete/${id_admin}`).then((response) => {
+      axios.delete(`/DB/delete/${id_admin}`).then((response) => {
         // setAdmin(
         //   Admin.filter((values) => {
         //     return values.admin_id != admin_id;
@@ -194,7 +195,7 @@ const Employeeslist = ({Admin}) => {
   const getEmployees = (values) => {
     
     //console.log(values);
-      axios.get(`http://localhost:5000/DB/getEmployee/${values.admin_id}`).then((response) => {
+      axios.get(`/DB/getEmployee/${values.admin_id}`).then((response) => {
         //console.log('123',response.data.admin_name);
         console.log(response.data);
         setDataEmployee(response.data);

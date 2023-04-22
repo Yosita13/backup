@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from "react-helmet";
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import {axiosCMMS as axios} from '../config/axios';
+//import axios from 'axios';
 import $, { event } from "jquery";
 import {
   Avatar_01, Avatar_02, Avatar_03, Avatar_04, Avatar_05, Avatar_11, Avatar_12, Avatar_09,
@@ -50,7 +51,7 @@ const AllEmployees = () => {
     console.log('Received values of form: ', values);
     try {
       console.log('Received values of form: ', values);
-      const {data} = await axios.post('http://localhost:5000/DB/tbl_admin2',{
+      const {data} = await axios.post('/DB/tbl_admin2',{
         admin_id:values.ID,
         admin_name : values.Name,
         admin_email : values.email,
@@ -77,7 +78,7 @@ const AllEmployees = () => {
 
   const getAdmin = async () => {
     try {
-      const { data } = await axios.get('http://localhost:5000/DB/tbl_admin')
+      const { data } = await axios.get('/DB/tbl_admin')
       // console.log(data.length)
       setAdmin(data)
     } catch (error) {
@@ -103,7 +104,7 @@ const AllEmployees = () => {
 
 
   // const addAdmin = () => {
-  //   axios.post('http://localhost:5000/DB/tbl_admin', {
+  //   axios.post('/DB/tbl_admin', {
   //     admin_name: admin_name,
   //     admin_designation: admin_designation,
   //     admin_email: admin_email,

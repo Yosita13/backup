@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from "react-helmet";
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+ import {axiosCMMS as axios} from '../config/axios';
+//import  axios from  'axios';
 import { MoreOutlined, EditOutlined, MailOutlined } from '@ant-design/icons';
 import Header from '../initialpage/Sidebar/header'
 import Sidebar from '../initialpage/Sidebar/sidebar'
@@ -41,17 +42,30 @@ const Activity = () => {
   //console.log('data is ', data)
 
   //getAdmin 
-  useEffect(() => {
-    fetch('http://localhost:5000/DB/tbl_admin')
-      .then(response => response.json())
-      .then(data => setOptions(data))
-      .catch(error => console.log(error));
-  }, []);
-
+  // useEffect(() => {
+  //   fetch('/DB/tbl_admin')
+  //     .then(response => response.json())
+  //     .then(data => setOptions(data))
+  //     .catch(error => console.log(error));
+  // }, []);
+  
 
   useEffect(() => {
     getforjoin()
+    getAdmin()
   }, [])
+
+  const getAdmin = async () => {
+    try {
+      const { data } = await axios.get('/DB/tbl_admin')
+
+      //console.log('help',data.admin_name)
+      setOptions(data)
+    } catch (error) {
+
+    }
+  }
+  console.log('option',options);
 
   useEffect(() => {
     form3.setFieldValue({ admin_email: activity_email })
@@ -59,7 +73,7 @@ const Activity = () => {
 
   const getforjoin = async () => {
     try {
-      const { data } = await axios.get('http://localhost:5000/DB/get/get/for/join')
+      const { data } = await axios.get('/DB/get/get/for/join')
 
       //console.log('help',data.admin_name)
       setData(data)
@@ -74,7 +88,7 @@ const Activity = () => {
 
   const getActivity2 = async () => {
     try {
-      const { data } = await axios.get('http://localhost:5000/DB/get/get/for/join')
+      const { data } = await axios.get('/DB/get/get/for/join')
 
       //console.log('help',data.admin_name)
       setActivity(data)
@@ -99,7 +113,7 @@ const Activity = () => {
     form.resetFields();
     console.log('Received values of form: ', values);
     try {
-      const { data } = await axios.put(`http://localhost:5000/DB/update/status/${editStatus}`,
+      const { data } = await axios.put(`/DB/update/status/${editStatus}`,
         {
           id: values.editStatus,
           status: values.Status,
@@ -156,7 +170,7 @@ const Activity = () => {
 
     console.log('editstatus', editStatus);
     console.log('editstatus', priority);
-    const { data } = axios.get(`http://localhost:5000/DB/get/status/${editStatus}`).then((response) => {
+    const { data } = axios.get(`/DB/get/status/${editStatus}`).then((response) => {
       const defaultValue = {
         Priority:priority ,
         Status: Status,
@@ -205,7 +219,7 @@ const Activity = () => {
     //setIsModalOpen(false);
     hideModal2()
 
-    const { data } = axios.post('http://localhost:5000/DB/sendEmail', {
+    const { data } = axios.post('/DB/sendEmail', {
       status: Status,
       employee_email: values
     })

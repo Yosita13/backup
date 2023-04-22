@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+//import axios from 'axios';
+import { axiosCMMS as axios } from '../config/axios';
 import LogoOnlineAssest from '../initialpage/Sidebar/img/LogoOnlineAssest.png';
 import { Button, Form, Input } from 'antd';
 import { Link } from 'react-router-dom';
@@ -44,7 +45,7 @@ function RepairDetails() {
     const sendNoti = async (values) => {
         console.log('device', location.id);
         try {
-            const { data } = await axios.post(`http://localhost:5000/DB/sendNoti`)
+            const { data } = await axios.post(`/DB/sendNoti`)
         } catch (error) {
 
         }
@@ -64,7 +65,7 @@ function RepairDetails() {
         console.log('employee', employee_name);
         try {
             console.log('Received values of form: ', values);
-            const { data } = await axios.put(`http://localhost:5000/DB/put/repair/${location.state}}`, {
+            const { data } = await axios.put(`/DB/put/repair/${location.state}}`, {
                 case_detail: values.case_detail,
                 id: location.state,
                 device_id: location.id,
@@ -84,7 +85,7 @@ function RepairDetails() {
     const getDataImage = async (values) => {
 
         try {
-            const { data } = await axios.get(`http://localhost:5000/DB/gat/tbl_tastimg/${location.state}`)
+            const { data } = await axios.get(`/DB/gat/tbl_tastimg/${location.state}`)
             console.log('123', data);
             setID(data)
         } catch (error) {
@@ -114,7 +115,7 @@ function RepairDetails() {
 
     const getImage = async () => {
         try {
-            const { data } = await axios.get(`http://localhost:5000/DB/getImage/${location.state}`)
+            const { data } = await axios.get(`/DB/getImage/${location.state}`)
             console.log('data', data)
             setPic(data)
         } catch (error) {
@@ -128,7 +129,7 @@ function RepairDetails() {
 
     const getJoin = async () => {
         try {
-            const { data } = await axios.get(`http://localhost:5000/DB/get/get/for/join1/${location.state}`, {
+            const { data } = await axios.get(`/DB/get/get/for/join1/${location.state}`, {
 
             })
 

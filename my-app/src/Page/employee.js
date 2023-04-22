@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from "react-helmet";
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import {axiosCMMS as axios} from '../config/axios';
+//import axios from 'axios';
 import $, { event } from "jquery";
 import {
   Avatar_01, Avatar_02, Avatar_03, Avatar_04, Avatar_05, Avatar_11, Avatar_12, Avatar_09,
@@ -60,7 +61,7 @@ const AllEmployees = () => {
   const getEmployees = (values) => {
 
     //console.log(values);
-    axios.get(`http://localhost:5000/DB/getEmployee/${values.admin_id}`).then((response) => {
+    axios.get(`/DB/getEmployee/${values.admin_id}`).then((response) => {
       //console.log('123',response.data.admin_name);
 
       setDataEmployee(response.data);
@@ -91,7 +92,7 @@ const AllEmployees = () => {
     console.log('Received values of form: ', values);
     try {
       console.log('Received values of form: ', values);
-      const { data } = await axios.post('http://localhost:5000/DB/tbl_admin2', {
+      const { data } = await axios.post('/DB/tbl_admin2', {
         admin_id: values.ID,
         admin_name: values.Name,
         admin_email: values.email,
@@ -128,13 +129,13 @@ const AllEmployees = () => {
       // alert(`${Admin}`)
 
     } else if (value.id === undefined) {
-      const emp = Admin.filter((emp) => emp.admin_name.split(" ")[0] === value.name)
+      const emp = Admin.filter((emp) => emp.admin_name.split(" ")[0] === value.name||emp.admin_name=== value.name)
       setAdmin(emp)
       console.log('id undefind',emp);
       console.log('แต๋มขี้เหล่')
 
     }else if(value.name !== undefined && value.id !== undefined){
-      const emp1 = Admin.filter((emp1) => (emp1.admin_id === Number(value.id)) && emp1.admin_name.split(" ")[0] === value.name)
+      const emp1 = Admin.filter((emp1) => (emp1.admin_id === Number(value.id)) && emp1.admin_name.split(" ")[0] === value.name||emp1.admin_name === value.name)
       //const emp2 = Admin.filter((emp2) => emp2.admin_name.split(" ")[0] === value.name)
       setAdmin(emp1)
       console.log('1',emp1)
@@ -166,7 +167,7 @@ const AllEmployees = () => {
     form.resetFields();
     console.log('Received values of form: ', values);
     try {
-      const { data } = await axios.put(`http://localhost:5000/DB/update/${values.admin_id}`,
+      const { data } = await axios.put(`/DB/update/${values.admin_id}`,
         {
           admin_id: values.admin_id,
           admin_name: values.admin_name,
@@ -193,7 +194,7 @@ const AllEmployees = () => {
 
   const getAdmin = async () => {
     try {
-      const { data } = await axios.get('http://localhost:5000/DB/tbl_admin')
+      const { data } = await axios.get('/DB/tbl_admin')
       // console.log(data.length)
       setAdmin(data)
     } catch (error) {
@@ -216,7 +217,7 @@ const AllEmployees = () => {
     //setIsModalOpen(false);
     hideModal2()
 
-    const { data } = axios.post('http://localhost:5000/DB/sendEmailAdmin', {
+    const { data } = axios.post('/DB/sendEmailAdmin', {
         admin_email: admin_email,
         admin_password : admin_password
     })
@@ -274,7 +275,7 @@ const AllEmployees = () => {
 
   const deleEmployees = (values) => {
     //console.log(admin_id);
-    axios.delete(`http://localhost:5000/DB/delete/${values.admin_id}`).then((response) => {
+    axios.delete(`/DB/delete/${values.admin_id}`).then((response) => {
       setAdmin(
         Admin.filter((values) => {
           return values.admin_id != admin_id;

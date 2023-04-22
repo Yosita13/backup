@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+//import axios from 'axios';
+import {axiosCMMS as axios} from '../config/axios'
 import LogoOnlineAssest from '../initialpage/Sidebar/img/LogoOnlineAssest.png'
 import { Button, Form } from 'antd';
 import { Link, useLocation, useHistory } from 'react-router-dom';
@@ -14,7 +15,7 @@ function Status() {
     let history = useHistory()
     const [open, setOpen] = useState(false);
     const [case_detail, setCase_detail] = useState("");
-    const [detail, setDetail] = useState("");
+    const [detail, setDetail] = useState([]);
     const [id_device,setId_device] = useState("");
     const { Meta } = Card;
     const [forComfirmSatus,setForComfirmSatus] = useState();
@@ -31,7 +32,10 @@ function Status() {
 
     const getStatus = async () => {
         try {
-            const { data } = await axios.get(`http://localhost:5000/DB/get/status/device/${location.state}`)
+            
+          
+          const {data} = await axios.get(`/DB/get/status/device/${location.state}`)
+          
             console.log('data', data);
             // console.log(data.length)
             setDetail(data)
@@ -49,15 +53,14 @@ function Status() {
     //form.resetFields();
     console.log('Received values of form: ', values);
     try {
-      const { data } = await axios.put(`http://localhost:5000/DB/update/statusComplete/${id_device}`,
+      const { data } = await axios.put(`/DB/update/statusComplete/${id_device}`,
         {
           id:values.id_device,
         
         })
        //console.log(values.Responsible)
       //alert('success!!')
-      window.location.reload();
-
+      getStatus()
     } catch (error) {
 
     }
@@ -65,7 +68,7 @@ function Status() {
 
   const getStatusForConfrim = async () => {
     try {
-        const { data } = await axios.get(`http://localhost:5000/DB/get/status/device/${location.state}`)
+        const { data } = await axios.get(`/DB/get/status/device/${location.state}`)
         console.log('data', data);
         // console.log(data.length)
         setDetail(data)
