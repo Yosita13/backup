@@ -1,13 +1,13 @@
 import axios from 'axios'
 
 
-const axiosCMMS = axios.create({
-    baseURL:'https://cmms-oa.herokuapp.com'
-})
-
 // const axiosCMMS = axios.create({
-//     baseURL:'http://localhost:5000'
+//     baseURL:'https://cmms-oa.herokuapp.com'
 // })
+
+const axiosCMMS = axios.create({
+    baseURL:'http://localhost:5000'
+})
 
 
 

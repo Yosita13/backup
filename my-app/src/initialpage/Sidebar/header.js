@@ -15,16 +15,25 @@ import { Button, message, Popconfirm } from 'antd';
 import { Avatar, Badge } from 'antd';
 import bell from "../Sidebar/img/bell.svg";
 import bars from '../Sidebar/img/bars.svg';
+import {useLocation, useHistory } from 'react-router-dom';
+import LogOut from "../Sidebar/img/LogOut.svg";
+
+
 
 
 
 const Header = (props) => {
-
+  let history = useHistory()
   const handlesidebar = () => {
     document.body.classList.toggle('mini-sidebar');
   }
   const onMenuClik = () => {
     props.onMenuClick()
+  }
+
+  const logout = () => {
+    localStorage.clear()
+    history.push('/login')
   }
 
   const items = [
@@ -124,8 +133,8 @@ const Header = (props) => {
 
 
         <li className="nav-item dropdown has-arrow main-drop">
-          <a href="#" className="nav-item dropdown has-arrow main-drop">
-            <Dropdown menu={{ items }} trigger={['click']}>
+          <a href="#">
+            {/* <Dropdown menu={{ items }} trigger={['click']}>
               <a onClick={(e) => e.preventDefault()}>
                 <span className="user-img me-1"><img src={''} alt="" />
                   <span /></span>
@@ -134,8 +143,17 @@ const Header = (props) => {
                   <DownOutlined />
                 </span>
               </a>
-            </Dropdown>
+            </Dropdown> */}
           </a>
+          <Button onClick={logout}>
+                <span type='primary' className='btn-gray-1000'shape='square'><img src={''} alt="" />
+                  <span /></span>
+                  <img src={LogOut } /> 
+                  {/* <span> logout </span> */}
+                 
+                  
+               
+              </Button>
 
         </li>
 

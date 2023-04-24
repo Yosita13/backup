@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from "react-helmet";
 import { Link } from 'react-router-dom';
+// import axios from 'axios';
 import {axiosCMMS as axios} from '../config/axios';
-//import axios from 'axios';
+import $, { event } from "jquery";
+import {
+  Avatar_01, Avatar_02, Avatar_03, Avatar_04, Avatar_05, Avatar_11, Avatar_12, Avatar_09,
+  Avatar_10, Avatar_08, Avatar_13, Avatar_16
+} from "../Entryfile/imagepath"
+// import Addcategory from "../_components/modelbox/Addcategory"
+// import Editcategory from "../_components/modelbox/Editcategory"
 import { DownOutlined } from '@ant-design/icons';
 import Header from '../initialpage/Sidebar/header'
 import Sidebar from '../initialpage/Sidebar/sidebar'
@@ -15,69 +22,32 @@ import {
   DatePicker,
 
 } from 'antd';
-import Employeeslist from '../Page/employeeslist';
+import Categorylist from '../Page/categorylist';
 import { itemRender, onShowSizeChange } from "../Page/paginationfunction"
-import { useLocation } from 'react-router-dom';
 
 const { Option } = Select;
 
-const AllEmployees = () => {
+const AllCategory = () => {
 
 
   const [menu, setMenu] = useState(false)
   const [open, setOpen] = useState(false)
-  const [Admin, setAdmin] = useState([])
+  const [Category, setCategory] = useState([])
   const [Edit, setEdit] = useState([])
   const [form] = Form.useForm();
   const [form2] = Form.useForm();
-  const [admin_name, setAdmin_name] = useState("");
-  const [admin_email, setAdmin_email] = useState("");
-  const [admin_password, setAdmin_password] = useState("");
-  const [admin_phone, setAdmin_phone] = useState("");
-  const [admin_designation, setAdmin_designation] = useState("");
+  const [category_name, setCategory_name] = useState("");
   const [created_timestamp, setCreated_timestamp] = useState("");
   const [updated_timestamp, setUpdated_timestamp] = useState("");
-  const [admin_address, setAdmin_address] = useState("");
-  const [admin_newphone, setAdmin_newphone] = useState("");
-  const [admin_id, setAdmin_id] = useState("");
-  const [dataEmployee, setDataEmployee] = useState();
-  const [initialValues, setInitialValues] = useState();
-  const [newPassword, setNewPassword] = useState();
-  const [EmployeeID, setEmployeeID] = useState(null);
-  const [EmployeeName, setEmployeeName] = useState(null);
-  const location = useLocation()
-  const [forsendEmail, setForsendEmail] = useState();
   
+  const [category_id, setCategory_id] = useState("");
+  const [dataCategory, setDataCategory] = useState();
+  const [initialValues, setInitialValues] = useState();
+  //const [newPassword, setNewPassword] = useState();
+  const [CategoryID, setCategoryID] = useState(null);
+  const [CategoryName, setCategoryName] = useState(null);
 
-  //console.log('employeeID', EmployeeID);
-
-  const getEmployees = (values) => {
-
-    //console.log(values);
-    axios.get(`/DB/getEmployee/${values.admin_id}`).then((response) => {
-      //console.log('123',response.data.admin_name);
-
-      setDataEmployee(response.data);
-      const defaultValue = {
-        admin_id: response.data.admin_id,
-        admin_name: response.data.admin_name,
-        admin_email: response.data.admin_email,
-        admin_password: response.data.admin_password,
-        admin_phone: response.data.admin_phone,
-        created_timestamp: response.data.created_timestamp,
-        updated_timestamp: response.data.updated_timestamp,
-        admin_address: response.data.admin_address,
-        admin_designation: response.data.admin_designation
-      }
-      //console.log('222',defaultValue);
-      setInitialValues(defaultValue);
-
-
-    })
-   
-
-
-  }
+  console.log('categoryID', CategoryID);
 
   const onFinish = async (values) => {
     setOpen(false);
@@ -85,90 +55,65 @@ const AllEmployees = () => {
     console.log('Received values of form: ', values);
     try {
       console.log('Received values of form: ', values);
-      const { data } = await axios.post('/DB/tbl_admin2', {
-        admin_id: values.ID,
-        admin_name: values.Name,
-        admin_email: values.email,
-        admin_password: values.password,
-        admin_phone: values.phone,
-        admin_address: values.Address,
-        admin_designation: values.role
+      const { data } = await axios.post('/DB/tbl_category2', {
+        category_id: values.ID,
+        category_name: values.Name,
+        
       })
       console.log(data);
-      handleOk();
+
       alert('success!!')
-      window.location.reload();
 
     } catch (e) {
 
     }
   };
 
-  
-
   const onFinish2 = (value) => {
-   
-    console.log('fillter',value);
-    console.log('admin',Admin);
-    //console.log('value.admin_id',admin_id);
-    //console.log('typeof value.id',typeof value.id)
-    
+    console.log(value);
+
     if (value.name === undefined) {
-      const emp = Admin.filter((emp) =>emp.admin_id === Number(value.id)) 
-      setAdmin(emp)
-      console.log('emp.adminid',value.id);
-      console.log('name_undefine',emp);
       console.log('แต๋มสวย')
+      const emp = Category.filter((emp) => emp.category_id === value.id)
+      setCategory(emp)
       // alert(`${Admin}`)
 
     } else if (value.id === undefined) {
-      const emp = Admin.filter((emp) => emp.admin_name.split(" ")[0] === value.name||emp.admin_name=== value.name)
-      setAdmin(emp)
-      console.log('id undefind',emp);
+      const emp = Category.filter((emp) => emp.category_name.split(" ")[0] === value.name)
+      setCategory(emp)
+      console.log(emp);
       console.log('แต๋มขี้เหล่')
 
     }else if(value.name !== undefined && value.id !== undefined){
-      const emp1 = Admin.filter((emp1) => (emp1.admin_id === Number(value.id)) && emp1.admin_name.split(" ")[0] === value.name||emp1.admin_name === value.name)
-      //const emp2 = Admin.filter((emp2) => emp2.admin_name.split(" ")[0] === value.name)
-      setAdmin(emp1)
+      const emp1 = Category.filter((emp1) => (emp1.category_id === value.id) && emp1.category_name.split(" ")[0] === value.name)
+      // const emp2 = Admin.filter((emp2) => emp2.admin_name.split(" ")[0] === value.name)
+      setCategory(emp1)
       console.log('1',emp1)
-      //console.log('2',emp2);
-      
+      // console.log('2',emp2);
     // if(Admin.filter((Admin) => Admin.admin_id !== value.id) ||  Admin.filter((Admin) => Admin.admin_name.split(" ")[0] !== value.name)){
     //   setAdmin([])
-    //   console.log('3');
     // }
     // else if(Admin.filter((Admin) => Admin.admin_id === value.id) &&  Admin.filter((Admin) => Admin.admin_name.split(" ")[0] === value.name)){
     //   setAdmin(emp1)
-    //   console.log('4');
     // }
 
     }
-    
 
   }
-
-
   const onReset = () => {
-    form2.resetFields();
-    getAdmin();
-  
+    form.resetFields();
+    getCategory();
   };
-
   const Finish = async (values) => {
     setOpen(false);
     form.resetFields();
     console.log('Received values of form: ', values);
     try {
-      const { data } = await axios.put(`/DB/update/${values.admin_id}`,
+      const { data } = await axios.put(`/DB/update/${values.category_id}`,
         {
-          admin_id: values.admin_id,
-          admin_name: values.admin_name,
-          admin_email: values.admin_email,
-          admin_password: values.admin_password,
-          admin_phone: values.admin_phone,
-          admin_address: values.admin_address,
-          admin_designation: values.admin_designation
+          category_id: values.category_id,
+          category_name: values.category_name,
+          
         })
       // console.log(data.length)
       alert('success!!')
@@ -182,43 +127,69 @@ const AllEmployees = () => {
 
 
   useEffect(() => {
-    getAdmin()
+    getCategory()
   }, [])
 
-  const getAdmin = async () => {
+  const getCategory = async () => {
     try {
-      const { data } = await axios.get('/DB/tbl_admin')
+      const { data } = await axios.get('/DB/tbl_category')
       // console.log(data.length)
-      setAdmin(data)
+      setCategory(data)
     } catch (error) {
 
     }
   }
-  //console.log(Admin)
 
-//-----------------send email after register------------------------
-  const hideModal2 = () => {
+  console.log(Category)
 
-    setForsendEmail(false);
-    form.resetFields()
-    //console.log('111',activity_email)
-    form.setFieldValue({ admin_email: admin_email })
-  };
+  const items = [
+    {
+      label: <a href="/app/profile/employee-profile">My Profile</a>,
+      key: '0',
+    },
+    {
+      label: <a href="/settings/companysetting">Settings</a>,
+      key: '1',
+    },
+    {
+      label: <a href="/login">Logout</a>,
+      key: '2',
+    },
+  ];
 
-  const handleOk = (values) => {
-    console.log('va', values);
-    //setIsModalOpen(false);
-    hideModal2()
 
-    const { data } = axios.post('/DB/sendEmailAdmin', {
-        admin_email: admin_email,
-        admin_password : admin_password
-    })
-    console.log(data);
-    //form3.resetFields()
-  };
-  
-  //-----------------send email after register------------------------
+
+  // const addAdmin = () => {
+  //   axios.post('/DB/tbl_admin', {
+  //     admin_name: admin_name,
+  //     admin_designation: admin_designation,
+  //     admin_email: admin_email,
+  //     admin_password: admin_password,
+  //     // confirmpassword: confirmpassword,
+  //     admin_phone: admin_phone,
+  //     created_timestamp : created_timestamp ,
+  //     updated_timestamp : updated_timestamp ,
+  //     admin_address: admin_address,
+  //     admin_id: admin_id
+  //   }).then(() => {
+  //     setAdmin([
+  //       {
+  //         admin_name: admin_name,
+  //         admin_designation: admin_designation,
+  //         admin_email: admin_email,
+  //         admin_password: admin_password,
+  //         //confirmpassword: confirmpassword,
+  //         admin_phone: admin_phone,
+  //         created_timestamp : created_timestamp ,
+  //         updated_timestamp : updated_timestamp ,
+  //         admin_address: admin_address,
+  //         admin_id: admin_id
+  //       }
+  //     ])
+  //   })
+  // }
+
+
   const prefixSelector = (
     <Form.Item name="prefix" noStyle>
       <Select style={{ width: 70 }}>
@@ -266,12 +237,12 @@ const AllEmployees = () => {
   //   }
   // }); 
 
-  const deleEmployees = (values) => {
+  const deleCategorys = (values) => {
     //console.log(admin_id);
-    axios.delete(`/DB/delete/${values.admin_id}`).then((response) => {
-      setAdmin(
-        Admin.filter((values) => {
-          return values.admin_id != admin_id;
+    axios.delete(`/DB/delete/${values.category_id}`).then((response) => {
+      setCategory(
+        Category.filter((values) => {
+          return values.category_id != category_id;
         })
       )
       console.log(response);
@@ -284,7 +255,30 @@ const AllEmployees = () => {
   }
 
 
-  
+  const getCategorys = (values) => {
+
+    //console.log(values);
+    axios.get(`/DB/get/employee/${values.category_id}`).then((response) => {
+      //console.log('123',response.data.admin_name);
+
+      setDataCategory(response.data);
+      const defaultValue = {
+        category_id: response.data.category_id,
+        category_name: response.data.category_name,
+        
+        created_timestamp: response.data.created_timestamp,
+        updated_timestamp: response.data.updated_timestamp
+        
+      }
+      //console.log('222',defaultValue);
+      setInitialValues(defaultValue);
+
+
+    })
+    showModal()
+
+
+  }
 
   const showModal = () => {
     setOpen(true);
@@ -295,17 +289,37 @@ const AllEmployees = () => {
   };
 
 
-  const handlepassword = (e) => {
+//   const handlepassword = (e) => {
 
-    form.setFieldValue({ admin_password: e.target.value })
+//     form.setFieldValue({ admin_password: e.target.value })
+//   }
+
+  const handleCategory = () => {
+
+
+    if (CategoryName === null) {
+      const emp = Category.filter((emp) => emp.category_id === CategoryID)
+      setCategory(emp)
+      console.log('แต๋มสวย')
+      console.log(emp);
+      console.log(CategoryName);
+      console.log('id', CategoryID);
+    } else if (CategoryID === null) {
+      const emp = Category.filter((emp) => emp.category_name.split(" ")[0] === CategoryName)
+      setCategory(emp)
+      console.log(emp);
+      console.log('แต๋มขี้เหล่')
+      console.log(emp);
+      console.log(CategoryName);
+      console.log('id', CategoryID);
+
+    }
   }
 
-
-
   const handleClear = async () => {
-    setEmployeeID(null)
-    setEmployeeName(null)
-    getAdmin()
+    setCategoryID(null)
+    setCategoryName(null)
+    getCategory()
   }
 
 
@@ -313,27 +327,17 @@ const AllEmployees = () => {
 
     {
       title: 'ID',
-      dataIndex: 'admin_id',
+      dataIndex: 'category_id',
 
       sorter: (a, b) => a.ID.length - b.ID.length,
     },
     {
       title: 'name',
-      dataIndex: 'admin_name',
-      sorter: (a, b) => a.admin_name.length - b.admin_name.length,
+      dataIndex: 'category_name',
+      sorter: (a, b) => a.category_name.length - b.category_name.length,
     },
 
-    {
-      title: 'Email',
-      dataIndex: 'admin_email',
-      sorter: (a, b) => a.admin_email.length - b.admin_email.length,
-    },
-
-    {
-      title: 'Mobile',
-      dataIndex: 'admin_phone',
-      sorter: (a, b) => a.admin_phone.length - b.admin_phone.length,
-    },
+    
 
     // {
     //   title: 'Join Date',
@@ -341,10 +345,10 @@ const AllEmployees = () => {
     //   sorter: (a, b) => a.created_timestamp.length - b.created_timestamp.length,
     // },
 
-    {
-      title: 'Role',
-      dataIndex: 'admin_designation',
-      render: (text, record) => <Tag>{text}</Tag>
+    // {
+    //   title: 'Role',
+    //   dataIndex: 'admin_designation',
+    //   render: (text, record) => <Tag>{text}</Tag>
       //console.log(text)
 
       // <div className="dropdown">
@@ -357,7 +361,7 @@ const AllEmployees = () => {
       // </div>
       // </div>
 
-    },
+   // },
     // {
     //   title: 'Action',
     //   render: (text, record) =>
@@ -383,33 +387,16 @@ const AllEmployees = () => {
         <div className="dropdown profile-action">
 
 
-          {/* <Col span={12} style={{ textAlign: 'left' }}>
-            <Button  type="primary" htmlType="submit"  >Edit  </Button>
-          </Col>
-          <Col span={8} style={{ textAlign: 'right' }}>
-            <Button type="primary" danger onClick={() => {deleteEmployees()}}>Delete</Button>
-          </Col> */}
 
-          <Button type="primary" success onClick={() => getEmployees(text)}
-            data-bs-toggle="modal" data-bs-target="#add_employee"><i className="fa fa-plus" />
+          <Button type="primary" success onClick={() => getCategorys(text)}
+            data-bs-toggle="modal" data-bs-target="#add_category"><i className="fa fa-plus" />
             Edit
           </Button>
 
-          {/* <Button type="primary" danger onClick={() => deleEmployees(text)}
-            data-bs-toggle="modal" data-bs-target="#add_employee" ><i className="fa fa-plus" />
-            delete
-          </Button> */}
-
-          <Button type="primary" danger 
-            data-bs-toggle="modal" data-bs-target="#add_employee" ><i className="fa fa-plus" />
+          <Button type="primary" danger onClick={() => deleCategorys(text)}
+            data-bs-toggle="modal" data-bs-target="#add_category" ><i className="fa fa-plus" />
             delete
           </Button>
-
-
-
-
-
-
 
           <Modal
             width={650}
@@ -432,7 +419,7 @@ const AllEmployees = () => {
               >
                 <Form.Item
 
-                  name="admin_name"
+                  name="category_name"
                   label="Name"
                   rules={[{ required: true, message: 'Please input your  Name', whitespace: true }]}
                 // onChange={(event) => {
@@ -444,11 +431,11 @@ const AllEmployees = () => {
                 </Form.Item>
 
                 <Form.Item
-                  name="admin_id"
+                  name="category_id"
                   label="ID"
                   rules={[{ required: true, message: 'Please input your ID!' }]}
                   onChange={(event) => {
-                    setAdmin_id(event.target.value)
+                    setCategory_id(event.target.value)
                   }}
                 >
                   <Input disabled />
@@ -471,7 +458,7 @@ const AllEmployees = () => {
                       <Input />
                     </Form.Item> */}
 
-                <Form.Item
+                {/* <Form.Item
                   name="admin_designation"
                   label="role"
                   rules={[{ required: true, message: 'Please select role!' }]}
@@ -485,7 +472,7 @@ const AllEmployees = () => {
                     <Option value="other">Other</Option>
                   </Select>
                 </Form.Item>
-
+ */}
 
                 {/* <Form.Item
                       name="gender"
@@ -498,7 +485,7 @@ const AllEmployees = () => {
                         <Option value="other">Other</Option>
                       </Select>
                     </Form.Item> */}
-
+{/* 
                 <Form.Item
                   name="admin_email"
                   label="E-mail"
@@ -583,7 +570,7 @@ const AllEmployees = () => {
                   }}
                 >
                   <Input />
-                </Form.Item>
+                </Form.Item> */}
 
                 <Form.Item  {...tailFormItemLayout}>
                   <Row>
@@ -619,7 +606,7 @@ const AllEmployees = () => {
       <Sidebar />
       <div className="page-wrapper">
         <Helmet>
-          <title>Employee</title>
+          <title>Category</title>
           <meta name="description" content="Login page" />
         </Helmet>
         {/* Page Content */}
@@ -628,10 +615,10 @@ const AllEmployees = () => {
           <div className="page-header">
             <div className="row align-items-center">
               <div className="col">
-                <h3 className="page-title">Employee</h3>
+                <h3 className="page-title">Category</h3>
                 <ul className="breadcrumb">
                   <li className="breadcrumb-item"><Link to="/Page/admindashboard">Dashboard</Link></li>
-                  <li className="breadcrumb-item active">Employee</li>
+                  <li className="breadcrumb-item active">Category</li>
                 </ul>
               </div>
 
@@ -639,13 +626,13 @@ const AllEmployees = () => {
               <div className="col-sm-6 col-md-2">
 
                 <Button type="primary" onClick={showModal} shape='round'
-                  className="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_employee"><i className="fa fa-plus" />
-                  Add Employee
+                  className="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_category"><i className="fa fa-plus" />
+                  Add Category
                 </Button>
 
                 <Modal
                   width={650}
-                  title="Add employee"
+                  title="Add Category"
                   open={open}
                   // onOk={hideModal}
                   footer={null}
@@ -669,23 +656,23 @@ const AllEmployees = () => {
                       label="Name"
                       rules={[{ required: true, message: 'Please input your  Name', whitespace: true }]}
                       onChange={(event) => {
-                        setAdmin_name(event.target.value)
+                        setCategory_name(event.target.value)
                       }}
                     >
                       <Input />
 
                     </Form.Item>
 
-                    {/* <Form.Item
+                    <Form.Item
                       name="ID"
                       label="ID"
                       rules={[{ required: true, message: 'Please input your ID!' }]}
                       onChange={(event) => {
-                        setAdmin_id(event.target.value)
+                        setCategory_id(event.target.value)
                       }}
                     >
                       <Input />
-                    </Form.Item> */}
+                    </Form.Item>
 
                     {/* <Form.Item
                       name="Last Name"
@@ -703,7 +690,7 @@ const AllEmployees = () => {
                     >
                       <Input />
                     </Form.Item> */}
-
+{/* 
                     <Form.Item
                       name="role"
                       label="role"
@@ -717,7 +704,7 @@ const AllEmployees = () => {
                         <Option value="it support">IT Support</Option>
                         <Option value="other">Other</Option>
                       </Select>
-                    </Form.Item>
+                    </Form.Item> */}
 
 
                     {/* <Form.Item
@@ -731,7 +718,7 @@ const AllEmployees = () => {
                         <Option value="other">Other</Option>
                       </Select>
                     </Form.Item> */}
-
+{/* 
                     <Form.Item
                       name="email"
                       label="E-mail"
@@ -814,7 +801,7 @@ const AllEmployees = () => {
                       }}
                     >
                       <Input />
-                    </Form.Item>
+                    </Form.Item> */}
 
                     <Form.Item  {...tailFormItemLayout}>
                       <Row>
@@ -838,14 +825,48 @@ const AllEmployees = () => {
               </div>
             </div>
           </div>
-         
+          {/* /Page Header */}
+          {/* Search Filter */}
+          {/* <div className="row filter-row">
+            <div className="col-sm-6 col-md-3">
+              <div className="form-group form-focus">
+                <input type="text" className="form-control floating" />
+                <label className="focus-label">Employee ID</label>
+              </div>
+            </div>
+            <div className="col-sm-6 col-md-3">
+              <div className="form-group form-focus">
+                <input type="text" className="form-control floating" />
+                <label className="focus-label">Employee Name</label>
+              </div>
+            </div>
+            <div className="col-sm-6 col-md-3">
+              <div className="form-group form-focus select-focus">
+                <select className="select floating">
+                  <option>Select Designation</option>
+                  <option>Web Developer</option>
+                  <option>Web Designer</option>
+                  <option>Android Developer</option>
+                  <option>Ios Developer</option>
+                </select>
+                <label className="focus-label">Designation</label>
+              </div>
+            </div>
+            <div className="col-sm-6 col-md-3">
+              <a href="#" className="btn btn-success btn-block w-100"> Search </a>
+            </div>
+          </div> */}
+          {/* Search Filter */}
+
           <Form
-           
+            // {...layout}
 
             form={form2}
             name="control-hooks"
             onFinish={onFinish2}
-         
+          // style={{
+          //   maxWidth: 600,
+          // }}
           >
             <div className="row filter-row">
               <Form.Item
@@ -855,15 +876,17 @@ const AllEmployees = () => {
               >
                 <Form.Item
                   name="id"
-                
+                  // rules={[
+                  //   {
+                  //     required: true,
+                  //   },
+                  // ]}
                   style={{
                     display: 'inline-block',
                     width: 'calc(50% - 8px)',
                   }}
-                  
-                  
                 >
-                  <input className="form-control floating"  placeholder="Employee ID" />
+                  <input className="form-control floating" placeholder="Category ID" />
                 </Form.Item>
                 <Form.Item
                   name="name"
@@ -874,45 +897,98 @@ const AllEmployees = () => {
                     margin: '0 8px',
                   }}
                 >
-                  <input className="form-control floating" placeholder="Employee Name" />
+                  <input className="form-control floating" placeholder="Category Name" />
                 </Form.Item>
               </Form.Item>
+              {/* <Form.Item
+        name="id"
+       
+      >
+       
+          <div className="col-sm-6 col-md-3"> 
+              <div className="form-group form-focus">
+        <input className="form-control floating" placeholder="Employee ID"/>
+        </div>
+        </div>
+        </div>
+      </Form.Item> */}
+              {/* <input type="text" className="form-control floating" onChange={(e) => setEmployeeID(e.target.value)} placeholder="Employee ID"/> */}
+
+
+              {/* <Form.Item name="name"
               
-      
-              
+              >
+               <div className="col-sm-6 col-md-3">
+              <div className="form-group form-focus">
+                <input className="form-control floating" placeholder="Employee Name" />
+                
+              </div>
+            </div> 
+              </Form.Item> */}
+
+              {/* </div>
+            </div> */}
+
+              {/* <div className="col-sm-6 col-md-2">
+                <section className="form-group form-focus select-focus">
+                  <div className="btn-group">
+                    <select type="button" className="btn btn-secondary dropdown-toggle me-1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <option>Select Designation</option>
+                      <option>Admin</option>
+                      <option>IT Support</option>
+
+                    </select>
+
+                    <label className="focus-label">Designation</label>
+                  </div>
+                </section>
+              </div> */}
               
             </div>
 
             <Form.Item >
-             
-        
-              <div className="col-sm-6 col-md-4" style={{ textAlign: 'left' }} >
-                <Button type="primary" htmlType="submit" className="btn btn-success btn-block w-20" >
+              {/* <Button type="primary" htmlType="submit">
+        Search
+        </Button> */}
+              <div className="col-sm-6 col-md-4" style={{ textAlign: 'left' }}>
+                <Button type="primary" htmlType="submit" className="btn btn-success btn-block w-20">
                   Search
                 </Button>
                 <Button htmlType="button" className="btn btn-danger btn-block w-20 " style={{ marginLeft: '5px' }} onClick={onReset}>
                   Reset
                 </Button>
-              
+                {/* <a href="#" className="btn btn-success btn-block w-20" htmlType="submit"> Search </a> */}
+                {/* <a href="#" className="btn btn-danger btn-block w-20 " style={{ marginLeft : '5px' }}  onClick={handleClear} > Clear </a> */}
                 <div></div>
               </div>
 
             </Form.Item>
 
-           
+            {/* <div className="col-sm-6 col-md-4" style={{ textAlign: 'left' }}>
+              <a href="#" className="btn btn-success btn-block w-20" > Search </a>
+              <a href="#" className="btn btn-danger btn-block w-20 " style={{ marginLeft : '5px' }}  onClick={handleClear} > Clear </a>
+              <div></div>
+            </div> */}
           </Form>
 
-        
-        </div>
+          {/* </div> */}
 
-        
-       
-        <Employeeslist Admin={Admin} />
-        
+          {/* <div className="col-sm-6 col-md-4" style={{ textAlign: 'left' }}>
+              <a href="#" className="btn btn-success btn-block w-20" onClick={handleEmployee}> Search </a>
+              <a href="#" className="btn btn-danger btn-block w-20 " style={{ marginLeft : '5px' }}  onClick={handleClear} > Clear </a>
+              <div></div>
+            </div> */}
+        </div>
+        {/* /employee */}
+        <Categorylist Category={Category} />
+        {/* Add Employee Modal */}
+        {/* <Addcategory /> */}
+        {/* /Add Employee Modal */}
+
 
       </div>
     </div>
   );
 }
 
-export default AllEmployees;
+export default AllCategory;

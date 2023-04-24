@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from "react-helmet";
 import { Link } from 'react-router-dom';
-import {axiosCMMS as axios} from '../config/axios';
-//import axios from 'axios';
+import axios from 'axios';
+import $, { event } from "jquery";
+import {
+  Avatar_01, Avatar_02, Avatar_03, Avatar_04, Avatar_05, Avatar_11, Avatar_12, Avatar_09,
+  Avatar_10, Avatar_08, Avatar_13, Avatar_16
+} from "../Entryfile/imagepath"
+import Addemployee from "../_components/modelbox/Addemployee"
+import Editemployee from "../_components/modelbox/Editemployee"
 import { DownOutlined } from '@ant-design/icons';
 import Header from '../initialpage/Sidebar/header'
 import Sidebar from '../initialpage/Sidebar/sidebar'
@@ -15,13 +21,13 @@ import {
   DatePicker,
 
 } from 'antd';
-import Employeeslist from '../Page/employeeslist';
+import Itsupportlist from '../Page/itsupportlist';
 import { itemRender, onShowSizeChange } from "../Page/paginationfunction"
 import { useLocation } from 'react-router-dom';
 
 const { Option } = Select;
 
-const AllEmployees = () => {
+const Itsupport = () => {
 
 
   const [menu, setMenu] = useState(false)
@@ -54,7 +60,7 @@ const AllEmployees = () => {
   const getEmployees = (values) => {
 
     //console.log(values);
-    axios.get(`/DB/getEmployee/${values.admin_id}`).then((response) => {
+    axios.get(`http://localhost:5000/DB/getEmployee/${values.admin_id}`).then((response) => {
       //console.log('123',response.data.admin_name);
 
       setDataEmployee(response.data);
@@ -85,7 +91,7 @@ const AllEmployees = () => {
     console.log('Received values of form: ', values);
     try {
       console.log('Received values of form: ', values);
-      const { data } = await axios.post('/DB/tbl_admin2', {
+      const { data } = await axios.post('http://localhost:5000/DB/tbl_admin2', {
         admin_id: values.ID,
         admin_name: values.Name,
         admin_email: values.email,
@@ -122,13 +128,13 @@ const AllEmployees = () => {
       // alert(`${Admin}`)
 
     } else if (value.id === undefined) {
-      const emp = Admin.filter((emp) => emp.admin_name.split(" ")[0] === value.name||emp.admin_name=== value.name)
+      const emp = Admin.filter((emp) => emp.admin_name.split(" ")[0] === value.name)
       setAdmin(emp)
       console.log('id undefind',emp);
       console.log('แต๋มขี้เหล่')
 
     }else if(value.name !== undefined && value.id !== undefined){
-      const emp1 = Admin.filter((emp1) => (emp1.admin_id === Number(value.id)) && emp1.admin_name.split(" ")[0] === value.name||emp1.admin_name === value.name)
+      const emp1 = Admin.filter((emp1) => (emp1.admin_id === Number(value.id)) && emp1.admin_name.split(" ")[0] === value.name)
       //const emp2 = Admin.filter((emp2) => emp2.admin_name.split(" ")[0] === value.name)
       setAdmin(emp1)
       console.log('1',emp1)
@@ -160,7 +166,7 @@ const AllEmployees = () => {
     form.resetFields();
     console.log('Received values of form: ', values);
     try {
-      const { data } = await axios.put(`/DB/update/${values.admin_id}`,
+      const { data } = await axios.put(`http://localhost:5000/DB/update/${values.admin_id}`,
         {
           admin_id: values.admin_id,
           admin_name: values.admin_name,
@@ -187,7 +193,7 @@ const AllEmployees = () => {
 
   const getAdmin = async () => {
     try {
-      const { data } = await axios.get('/DB/tbl_admin')
+      const { data } = await axios.get('http://localhost:5000/DB/tbl_admin')
       // console.log(data.length)
       setAdmin(data)
     } catch (error) {
@@ -210,7 +216,7 @@ const AllEmployees = () => {
     //setIsModalOpen(false);
     hideModal2()
 
-    const { data } = axios.post('/DB/sendEmailAdmin', {
+    const { data } = axios.post('http://localhost:5000/DB/sendEmailAdmin', {
         admin_email: admin_email,
         admin_password : admin_password
     })
@@ -268,7 +274,7 @@ const AllEmployees = () => {
 
   const deleEmployees = (values) => {
     //console.log(admin_id);
-    axios.delete(`/DB/delete/${values.admin_id}`).then((response) => {
+    axios.delete(`http://localhost:5000/DB/delete/${values.admin_id}`).then((response) => {
       setAdmin(
         Admin.filter((values) => {
           return values.admin_id != admin_id;
@@ -638,10 +644,10 @@ const AllEmployees = () => {
 
               <div className="col-sm-6 col-md-2">
 
-                <Button type="primary" onClick={showModal} shape='round'
+                {/* <Button type="primary" onClick={showModal} shape='round'
                   className="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_employee"><i className="fa fa-plus" />
                   Add Employee
-                </Button>
+                </Button> */}
 
                 <Modal
                   width={650}
@@ -840,12 +846,14 @@ const AllEmployees = () => {
           </div>
          
           <Form
-           
+            // {...layout}
 
             form={form2}
             name="control-hooks"
             onFinish={onFinish2}
-         
+          // style={{
+          //   maxWidth: 600,
+          // }}
           >
             <div className="row filter-row">
               <Form.Item
@@ -855,7 +863,11 @@ const AllEmployees = () => {
               >
                 <Form.Item
                   name="id"
-                
+                  // rules={[
+                  //   {
+                  //     required: true,
+                  //   },
+                  // ]}
                   style={{
                     display: 'inline-block',
                     width: 'calc(50% - 8px)',
@@ -878,13 +890,56 @@ const AllEmployees = () => {
                 </Form.Item>
               </Form.Item>
               
-      
+              {/* <Form.Item
+        name="id"
+       
+      >
+       
+          <div className="col-sm-6 col-md-3"> 
+              <div className="form-group form-focus">
+        <input className="form-control floating" placeholder="Employee ID"/>
+        </div>
+        </div>
+        </div>
+      </Form.Item> */}
+              {/* <input type="text" className="form-control floating" onChange={(e) => setEmployeeID(e.target.value)} placeholder="Employee ID"/> */}
+
+
+              {/* <Form.Item name="name"
               
+              >
+               <div className="col-sm-6 col-md-3">
+              <div className="form-group form-focus">
+                <input className="form-control floating" placeholder="Employee Name" />
+                
+              </div>
+            </div> 
+              </Form.Item> */}
+
+              {/* </div>
+            </div> */}
+
+              {/* <div className="col-sm-6 col-md-2">
+                <section className="form-group form-focus select-focus">
+                  <div className="btn-group">
+                    <select type="button" className="btn btn-secondary dropdown-toggle me-1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <option>Select Designation</option>
+                      <option>Admin</option>
+                      <option>IT Support</option>
+
+                    </select>
+
+                    <label className="focus-label">Designation</label>
+                  </div>
+                </section>
+              </div> */}
               
             </div>
 
             <Form.Item >
-             
+              {/* <Button type="primary" htmlType="submit">
+        Search
+        </Button> */}
         
               <div className="col-sm-6 col-md-4" style={{ textAlign: 'left' }} >
                 <Button type="primary" htmlType="submit" className="btn btn-success btn-block w-20" >
@@ -893,26 +948,40 @@ const AllEmployees = () => {
                 <Button htmlType="button" className="btn btn-danger btn-block w-20 " style={{ marginLeft: '5px' }} onClick={onReset}>
                   Reset
                 </Button>
-              
+                {/* <a href="#" className="btn btn-success btn-block w-20" htmlType="submit"> Search </a> */}
+                {/* <a href="#" className="btn btn-danger btn-block w-20 " style={{ marginLeft : '5px' }}  onClick={handleClear} > Clear </a> */}
                 <div></div>
               </div>
 
             </Form.Item>
 
-           
+            {/* <div className="col-sm-6 col-md-4" style={{ textAlign: 'left' }}>
+              <a href="#" className="btn btn-success btn-block w-20" > Search </a>
+              <a href="#" className="btn btn-danger btn-block w-20 " style={{ marginLeft : '5px' }}  onClick={handleClear} > Clear </a>
+              <div></div>
+            </div> */}
           </Form>
 
-        
+          {/* </div> */}
+
+          {/* <div className="col-sm-6 col-md-4" style={{ textAlign: 'left' }}>
+              <a href="#" className="btn btn-success btn-block w-20" > Search </a>
+              <a href="#" className="btn btn-danger btn-block w-20 " style={{ marginLeft : '5px' }}  onClick={handleClear} > Clear </a>
+              
+            </div> */}
         </div>
 
         
-       
-        <Employeeslist Admin={Admin} />
-        
+        {/* /employee */}
+        <Itsupportlist Admin={Admin} />
+        {/* Add Employee Modal */}
+        {/* <Addemployee /> */}
+        {/* /Add Employee Modal */}
+
 
       </div>
     </div>
   );
 }
 
-export default AllEmployees;
+export default Itsupport;

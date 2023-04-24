@@ -25,6 +25,7 @@
     "qrscan": "^1.0.6",
     "react": "^16.0.0",
     "react-bootstrap": "^2.7.0",
+    "react-csv": "^2.2.2",
     "react-custom-scrollbars": "^4.2.1",
     "react-custom-scrollbars-2": "^4.5.0",
     "react-data-table-component": "^7.5.3",
