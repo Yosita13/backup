@@ -6,6 +6,7 @@ const multer = require('multer');
 const path = require('path');
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
+const bcrypt = require('bcrypt');
 dotenv.config();
 
 
@@ -30,7 +31,7 @@ router.get('/tbl_admin',async (req,res,next) => {
 
 
 //add employee
-router.post("/tbl_admin2" ,(req,res,next) => {
+router.post("/tbl_admin2" ,async (req,res,next) => {
     
     const admin_name = req.body.admin_name;
     const admin_designation = req.body.admin_designation;
@@ -43,11 +44,16 @@ router.post("/tbl_admin2" ,(req,res,next) => {
     const admin_address = req.body.admin_address;
     const admin_id = req.body.admin_id;
 
+    // generate salt for password
+    const salt = await bcrypt.genSalt(10);
+    // hash password with salt
+    const encryptedPassword = await bcrypt.hash(admin_password, salt);
+
     console.log('data1',req.body);
     // console.log(next);
     // res.send('hello')
     connect.query('INSERT INTO tbl_admin (admin_name,admin_designation,admin_email,admin_password,admin_phone,admin_address,created_timestamp,updated_timestamp) VALUES(?,?,?,?,?,?,now(),now())',
-    [admin_name,admin_designation,admin_email,admin_password,admin_phone,admin_address,created_timestamp,updated_timestamp],
+    [admin_name,admin_designation,admin_email,encryptedPassword,admin_phone,admin_address,created_timestamp,updated_timestamp],
     (err,result) => {
         if (err){
             console.log(err);
@@ -564,48 +570,59 @@ router.post("/sendEmailAdmin",(req,res,next) => {
 
 router.post('/admin/login', async (req, res) => {
 
+  
   const admin_email = req.body.admin_email;
   const admin_password = req.body.admin_password;
 
   
-    connect.query('SELECT * FROM tbl_admin WHERE admin_email = ? AND admin_password = ?', [admin_email, admin_password], (err, results) => {
-      if (err) {
-        res.send({ err: err })
-      }
+  connect.query('SELECT * FROM tbl_admin WHERE admin_email = ?', [admin_email], async (error, results) => {
+    if (error) {
+      res.send({ error: error });
+    } else {
       if (results.length > 0) {
-        Object.keys(results).forEach(function (key) {
-          var row = results[key];
-          res.send(row)
-      })
+        const comparison = await bcrypt.compare(admin_password, results[0].admin_password);
+        if (comparison) {
+          res.send(results[0]);
+        } else {
+          res.status(500).send("Invalid Credentials");
+        }
       } else {
         res.status(500).send("Invalid Credentials");
-         
       }
-
-    })
+    }
+  })
   
 
 })
 
 //change pass
-router.post("/changepassword", (req, res) => {
+router.post("/changepassword", async (req, res) => {
   const new_pass = req.body.new_pass;
   const admin_id = req.body.admin_id;
   console.log('id',admin_id);
   console.log('new',new_pass);
 
-  connect.query(
-    "UPDATE tbl_admin SET admin_password = ? WHERE admin_id = ?;",
-    [new_pass, admin_id],
-    (err, result) => {
-      if (err) {
-        console.log(err);
-        res.status(500).json({ message: "Error updating password" });
-      } else {
-        res.status(200).json({ message: "Password updated successfully" });
+  try {
+    // เข้ารหัสตัวแปร new_pass ด้วย bcrypt
+    const salt = await bcrypt.genSalt(10);
+    const hashedPass = await bcrypt.hash(new_pass, salt);
+
+    connect.query(
+      "UPDATE tbl_admin SET admin_password = ? WHERE admin_id = ?;",
+      [hashedPass, admin_id],
+      (err, result) => {
+        if (err) {
+          console.log(err);
+          res.status(500).json({ message: "Error updating password" });
+        } else {
+          res.status(200).json({ message: "Password updated successfully" });
+        }
       }
-    }
-  );
+    );
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Error updating password" });
+  }
 });
 
 
@@ -759,6 +776,28 @@ router.get("/tbl_device", async (req, res, next) => {
     }
   });
 
+  //get Devices
+router.get("/getCheck/:device_id", async (req, res, next) => {
+  const device_id = req.params.device_id;
+  console.log('555',req.params)
+
+  connect.query('SELECT * FROM tbl_device WHERE device_id = ? ',[device_id],
+  (err,rows) => {
+      if (err){
+          res.send(err)
+      }
+      else {
+          Object.keys(rows).forEach(function (key) {
+              var row = rows[key];
+              res.send(row)
+              
+          })
+          // console.log(rows);
+      }
+  }) 
+});
+
+
 
   //add Devices
 router.post("/tbl_device2", (req, res, next) => {
@@ -772,6 +811,9 @@ router.post("/tbl_device2", (req, res, next) => {
     const device_model = req.body.device_model;
     const device_serial = req.body.device_serial;
     const device_asset_tag = req.body.device_asset_tag;
+    const device_year = req.body.device_year;
+    const device_month = req.body.device_month;
+    const device_date = req.body.device_date;
     const device_id = req.body.device_id;
     const created_timestamp = req.body.created_timestamp;
     const updated_timestamp = req.body.updated_timestamp;
@@ -780,7 +822,7 @@ router.post("/tbl_device2", (req, res, next) => {
     // console.log(next);
     // res.send('hello')
     connect.query(
-      "INSERT INTO tbl_device (device_name,device_warranty,device_producer,device_cost,device_image,device_note,device_status,device_model,device_serial,device_asset_tag,created_timestamp,updated_timestamp) VALUES(?,?,?,?,?,?,?,?,?,?,now(),now())",
+      "INSERT INTO tbl_device (device_name,device_warranty,device_producer,device_cost,device_image,device_note,device_status,device_model,device_serial,device_asset_tag,device_year,device_month,device_date,created_timestamp,updated_timestamp) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,now(),now())",
       [
         device_name,
         device_warranty,
@@ -792,6 +834,9 @@ router.post("/tbl_device2", (req, res, next) => {
         device_model,
         device_serial,
         device_asset_tag,
+        device_year,
+        device_month,
+        device_date,
         created_timestamp,
         updated_timestamp,
       ],
@@ -806,7 +851,7 @@ router.post("/tbl_device2", (req, res, next) => {
   });
 
   //update device
-router.put("/update/Device/:device_id", (req, res, next) => {
+  router.put("/update/Device/:device_id", (req, res, next) => {
     const device_name = req.body.device_name;
     const device_warranty = req.body.device_warranty;
     const device_producer = req.body.device_producer;
@@ -817,6 +862,9 @@ router.put("/update/Device/:device_id", (req, res, next) => {
     const device_model = req.body.device_model;
     const device_serial = req.body.device_serial;
     const device_asset_tag = req.body.device_asset_tag;
+    const device_year = req.body.device_year;
+    const device_month = req.body.device_month;
+    const device_date = req.body.device_date;
     const device_id = req.params.device_id;
     const created_timestamp = req.body.created_timestamp;
     const updated_timestamp = req.body.updated_timestamp;
@@ -824,7 +872,7 @@ router.put("/update/Device/:device_id", (req, res, next) => {
     console.log("edit", req.body);
     console.log('name',device_name);
     connect.query(
-      "UPDATE device_asset.tbl_device SET device_name=?,device_warranty=?,device_producer=?,device_cost=?,device_image=?,device_note=?,device_status=?,device_model=?,device_serial=?,device_asset_tag=?,created_timestamp=now(),updated_timestamp=now() WHERE device_id = ?",
+      "UPDATE device_asset.tbl_device SET device_name=?,device_warranty=?,device_producer=?,device_cost=?,device_image=?,device_note=?,device_status=?,device_model=?,device_serial=?,device_asset_tag=?,device_year=?,device_month=?,device_date=?,created_timestamp=now(),updated_timestamp=now() WHERE device_id = ?",
       [
         device_name,
         device_warranty,
@@ -836,7 +884,10 @@ router.put("/update/Device/:device_id", (req, res, next) => {
         device_model,
         device_serial,
         device_asset_tag,
-         device_id,
+        device_year,
+        device_month,
+        device_date,
+        device_id,
         created_timestamp,
         updated_timestamp,
        
@@ -933,5 +984,83 @@ router.delete("/delete/:device_id", (req, res) => {
       console.log(err);
     }
   });
+
+
+    //add owner
+router.post("/update/ownner", async (req, res, next) => {
+  const device_id = req.body.device_id;
+  const employee_id = req.body.employee_id;
+  const owner_note = req.body.owner_note;
+
+  console.log('555',req.body)
+
+  connect.query('INSERT INTO tbl_owner (device_id,employee_id,owner_note,created_timestamp,updated_timestamp) VALUES(?,?,?,now(),now())',[device_id,employee_id,owner_note],
+  (err,result) => {
+    if (err){
+        console.log(err);
+    
+    }
+    else{
+        res.send("Values inserted");
+    }
+}
+)
+});
+
+//get owner
+router.get ("/get/employee_name" ,(req,res,next) => {
+  const sql = `SELECT d.device_id, d.device_name, d.device_producer, d.device_status, e.employee_name, d.device_note, d.device_serial, d.device_model,o.owner_id
+  FROM tbl_device AS d
+  LEFT JOIN tbl_owner AS o ON o.device_id = d.device_id 
+  LEFT JOIN tbl_employee AS e ON o.employee_id = e.employee_id
+  ORDER BY o.owner_id DESC`;
+  
+
+  connect.query(sql, (error, results, fields) => {
+      if (error) {
+          console.log(error);
+          res.status(500).json({error: 'Error fetching data from database.'});
+      } else {
+          res.json(results);
+      }
+  });
+})
+
+ //update Owner
+ router.put("/updateOwner_id", (req, res, next) => {
+  const owner_id = req.body.owner_id;
+  const employee_id = null;
+  const note = null;
+  const created_timestamp = req.body.created_timestamp ;
+  const updated_timestamp = req.body.updated_timestamp ;
+  
+
+  console.log("help", owner_id);
+  
+  connect.query(
+    "UPDATE tbl_owner SET employee_id=?,owner_note=?,created_timestamp=now(),updated_timestamp=now() WHERE tbl_owner.owner_id = ?",
+    [
+      
+      employee_id,
+      note,
+      owner_id,
+      created_timestamp,
+      updated_timestamp,
+     
+    ],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.send("Values updated");
+        console.log("Values updated2");
+      }
+    }
+  );
+  
+});
+
+
+
 
 module.exports = router;

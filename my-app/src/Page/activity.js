@@ -123,7 +123,7 @@ const Activity = () => {
         })
       console.log(values.Responsible)
       //alert('success!!')
-      window.location.reload();
+      getActivity2()
 
     } catch (error) {
 

@@ -79,24 +79,6 @@ function UploadImage() {
       };
 
    
-
-    // const handleInputChange = async (event) => {
-    //     setuserInfo({
-    //         ...userInfo,
-    //         file: event.target.files[0],
-    //         filepreview: URL.createObjectURL(event.target.files[0]),
-    //     });
-    //     console.log('event',event.target.files[0]);
-
-    //     const file = event.target.files[0];
-    //     console.log('file0',file);
-    // const base64 = await convertToBase64(file);
-    // setPostImage({ ...postImage, myFile: base64 });
-
-    // }
-      
-
-
     const handleChnage=(e)=>{
         console.log(e.target.files)
 
@@ -192,7 +174,7 @@ function UploadImage() {
                                                 <div className="form-row">
                                                     
                                                 {imgs !== null ?
-                                            <img className="previewimg" src={imgs} alt="UploadImage" />
+                                            <img className="previewimg" src={imgs}  />
                                             : null}
                                                     <Link to="/webapp/userhome" type="submit" className="btn btn-primary-gray submit-btn" > กลับ </Link>
 

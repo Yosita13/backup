@@ -1,26 +1,16 @@
-
-/**
- * Signin Firebase
- */
 import React, { useEffect, useState } from 'react';
 import { Helmet } from "react-helmet";
 import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
-import { User, Avatar_19, Avatar_07, Avatar_06, Avatar_14 } from '../Entryfile/imagepath';
 import '../Entryfile/imagepath';
 import Header from '../initialpage/Sidebar/header';
 import Sidebar from '../initialpage/Sidebar/sidebar';
 import "../Page/index.css"
 //import axios from 'axios';
-import {axiosCMMS as axios} from '../config/axios';
+import { axiosCMMS as axios } from '../config/axios';
+import { Form, Input, Select, Row, Dropdown, Button, Col, Modal, Table } from 'antd';
+import { MoreOutlined, EditOutlined, MailOutlined, LaptopOutlined, FileWordOutlined, WifiOutlined, UserOutlined ,SettingOutlined} from '@ant-design/icons';
 
-import {
-  BarChart, Bar, Cell, ResponsiveContainer,
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-} from 'recharts';
-import { Form, Input, Select, Row, DatePicker, Dropdown, Button, Col, Modal, Space, Table, Tag } from 'antd';
-import { MoreOutlined, EditOutlined, MailOutlined ,LaptopOutlined,FileWordOutlined,WifiOutlined,UserOutlined} from '@ant-design/icons';
-import { itemRender, onShowSizeChange } from "../Page/paginationfunction"
 
 
 const { Option } = Select;
@@ -28,12 +18,9 @@ const AdminDashboard = () => {
 
   const [menu, setMenu] = useState(false)
   const [open, setOpen] = useState(false)
-  const [Admin, setAdmin] = useState([])
   const [form] = Form.useForm();
   const [form2] = Form.useForm();
   const [form3] = Form.useForm();
-  const [admin_id, setAdmin_id] = useState("");
-  const [dataEmployee, setDataEmployee] = useState();
   const [initialValues, setInitialValues] = useState();
   const [Status, setStatus] = useState(false);
   const [data, setData] = useState([]);
@@ -41,34 +28,19 @@ const AdminDashboard = () => {
   const [forsendEmail, setForsendEmail] = useState();
   const [activity_email, setActivity_email] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [priority, setPriority] = useState();//edit 16/04/2023
-  const [responsible, setResponsible] = useState(false)//edit 17/04/2023
+  const [priority, setPriority] = useState();
+  const [responsible, setResponsible] = useState(false)
   const [options, setOptions] = useState([]);
+  const [lengthRepair, setLengthRepair] = useState();
+  const [lengthDevice, setLengthDevice] = useState();
+  const [lengthUser, setLengthUser] = useState();
+  const [lengthAdmin, setLengthAdmin] = useState();
+  const [repair, setRepair] = useState();
+  const [device,setDevice] = useState();
+  
 
+  const name = localStorage.getItem('name');
 
-
-  const barchartdata = [
-    { y: '2006', "Total Income" : 100, 'Total Outcome' : 90 },
-    { y: '2007', "Total Income" : 75,  'Total Outcome' : 65 },
-    { y: '2008', "Total Income" : 50,  'Total Outcome' : 40 },
-    { y: '2009', "Total Income" : 75,  'Total Outcome' : 65 },
-    { y: '2010', "Total Income" : 50,  'Total Outcome' : 40 },
-    { y: '2011', "Total Income" : 75,  'Total Outcome' : 65 },
-    { y: '2012', "Total Income" : 100, 'Total Outcome' : 90 }
-];
-const linechartdata = [
-    { y: '2006', "Total Sales": 50, 'Total Revenue': 90 },
-    { y: '2007', "Total Sales": 75,  'Total Revenue': 65 },
-    { y: '2008', "Total Sales": 50,  'Total Revenue': 40 },
-    { y: '2009', "Total Sales": 75,  'Total Revenue': 65 },
-    { y: '2010', "Total Sales": 50,  'Total Revenue': 40 },
-    { y: '2011', "Total Sales": 75,  'Total Revenue': 65 },
-    { y: '2012', "Total Sales": 100, 'Total Revenue': 50 }
-];
-
-  const toggleMobileMenu = () => {
-    setMenu(!menu)
-  }
 
   useEffect(() => {
     let firstload = localStorage.getItem("firstload")
@@ -88,66 +60,104 @@ const linechartdata = [
       .catch(error => console.log(error));
   }, []);
 
-  // useEffect(() => {
-  //   getAdmin()
-  // }, [])
-
-  // const getAdmin = async () => {
-  //   try {
-  //     const { data } = await axios.get('/DB/tbl_admin')
-  //      console.log(data.length)
-  //     setAdmin(data)
-  //   } catch (error) {
-
-  //   }
-  // }
-  //console.log(IT.length)
-
-  //-------------------------------------------------------------------------------------------------
-
-
-  // useEffect(() => {
-  //   getAdmin()
-  // }, [])
-
-  // const getAdmin = async () => {
-  //   try {
-  //     const { data } = await axios.get('/DB/tbl_admin')
-  //     // console.log(data.length)
-  //     setAdmin(data)
-  //   } catch (error) {
-
-  //   }
-  // }
-
+  //getAdminlength
   useEffect(() => {
-    getAdmin()
+    getAdminlength()
   }, [])
 
-  useEffect(() => {
-    form3.setFieldValue({ admin_email: activity_email })
-  }, [activity_email])
-
-  const getAdmin = async () => {
+  const getAdminlength = async () => {
     try {
-      const { data } = await axios.get('/DB/get/get/for/join')
+      const { data } = await axios.get('/DB/tbl_admin')
 
-      // console.log('help',data.length)
+      console.log('help', data.length)
+      setLengthAdmin(data.length)
       setData(data)
     } catch (error) {
 
     }
   }
 
-  const onReset = () => {
-    form.resetFields();
-    getAdmin();
-  };
+
+  //getUser
+  useEffect(() => {
+    getUser()
+  }, [])
+
+  const getUser = async () => {
+    try {
+      const { data } = await axios.get('/DB/tbl_employee')
+      setLengthUser(data.length)
+      setData(data)
+    } catch (error) {
+
+    }
+  }
+
+  //getRepairLength
+  useEffect(() => {
+    getRepairLength()
+  }, [])
+
+  useEffect(() => {
+    form3.setFieldValue({ admin_email: activity_email })
+  }, [activity_email])
+
+  const getRepairLength = async () => {
+    try {
+      const { data } = await axios.get('/DB/get/get/for/join')
+      setLengthRepair(data.length)
+      setRepair(data)
+    } catch (error) {
+
+    }
+  }
+
+  //getDevice
+  useEffect(() => {
+    getDeviceLength()
+  }, [])
+
+  const getDeviceLength = async () => {
+    try {
+      const { data } = await axios.get('/DB/tbl_device')
+      setLengthDevice(data.length)
+      setData(data)
+    } catch (error) {
+
+    }
+  }
+
+
+
+  //edit 16/04/2023
+ 
+    const onFinish = async (values) => {
+      setOpen(false);
+      form.resetFields();
+      console.log('Received values of form: ', values);
+      try {
+        const { data } = await axios.put(`/DB/update/status/${editStatus}`,
+          {
+            id: values.editStatus,
+            status: values.Status,
+            priority: values.Priority,
+            admin_id: values.Responsible,
   
+          })
+        console.log(values.Responsible)
+        //alert('success!!')
+        getRepairLength()
+      } catch (error) {
+  
+      }
+    };
+  //edit 16/04/2023
 
+  //----------------------------------------------------------------------------------------------------------------------
 
-  //edit 17/04/2023
-  const getActivity = (values) => {
+  
+   //edit 17/04/2023
+   const getActivity = (values) => {
 
     console.log('editstatus', editStatus);
     console.log('editstatus', priority);
@@ -166,48 +176,18 @@ const linechartdata = [
   }
    //edit 17/04/2023
 
-   //edit 16/04/2023
-   const onFinish = async (values) => {
-    setOpen(false);
-    form.resetFields();
-    console.log('Received values of form: ', values);
+
+   useEffect(() => {
+    getDevice();
+  }, []);
+
+  const getDevice = async () => {
     try {
-      const { data } = await axios.put(`/DB/update/status/${editStatus}`,
-        {
-          id: values.editStatus,
-          status: values.Status,
-          priority: values.Priority,
-          admin_id: values.Responsible,
-
-        })
-      console.log(values.Responsible)
-      //alert('success!!')
-      window.location.reload();
-
-    } catch (error) {
-
-    }
+      const { data } = await axios.get("/DB/tbl_device");
+      // console.log(data.length)
+      setDevice(data);
+    } catch (error) {}
   };
-  //edit 16/04/2023
-
-  //----------------------------------------------------------------------------------------------------------------------
-
-
-  const getID = (values) => {
-
-    console.log('value', values);
-    setEditStatus(values.id)
-    setActivity_email(values.employee_email)
-    setStatus(values.status)
-    setPriority(values.priority)
-    setResponsible(values.admin_name)
-    console.log('sta', values.status);
-    console.log('email', values.employee_email);
-    //form.setFieldValue({Satus:values.status })
-
-
-  }
-  console.log('from2', form3.getFieldValue('admin_email'));
 
   const showModal2 = () => {
     setIsModalOpen(true);
@@ -234,15 +214,6 @@ const linechartdata = [
     //form3.resetFields()
   };
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
-
-  const handleButtonClick = (e) => {
-
-    console.log('click left button', e);
-  };
 
   const handleMenuClick = (e) => {
 
@@ -277,12 +248,10 @@ const linechartdata = [
     setOpen(false);
   };
 
-  const showModalForEmail = () => {
-    setForsendEmail(true);
+ 
+  const toggleMobileMenu = () => {
+    setMenu(!menu)
   };
-
-
-
 
 
 
@@ -381,20 +350,167 @@ const linechartdata = [
 
 
 
-    {
-      title: 'Action',
-      render: (value) => (
-        <>
-          <Dropdown
-            menu={menuProps}
-            placement="bottomRight"
-            trigger={['click']}>
-            <Button type='text' onClick={() => getID(value)}><MoreOutlined /></Button>
-          </Dropdown>
-        </>
-      )
-    },
+    // {
+    //   title: 'Action',
+    //   render: (value) => (
+    //     <>
+    //       <Dropdown
+    //         menu={menuProps}
+    //         placement="bottomRight"
+    //         trigger={['click']}>
+    //         <Button type='text' onClick={() => getID(value)}><MoreOutlined /></Button>
+    //       </Dropdown>
+    //     </>
+    //   )
+    // },
   ]
+
+
+  //table it
+  
+  const columnsIT = [
+    {
+      title: "ID",
+      dataIndex: "device_id",
+
+      sorter: (a, b) => a.ID.length - b.ID.length,
+    },
+    {
+      title: "name",
+      dataIndex: "device_name",
+      sorter: (a, b) => a.device_name.length - b.device_name.length,
+    },
+
+    // {
+    //   title: 'Warranty',
+    //   dataIndex: 'device_warranty',
+    //   sorter: (a, b) => a.device_warranty.length - b.device_warranty.length,
+    // },
+
+    {
+      title: "Producer",
+      dataIndex: "device_producer",
+      sorter: (a, b) => a.device_producer.length - b.device_producer.length,
+    },
+
+    // {
+    //   title: 'Cost',
+    //   dataIndex: 'device_cost',
+    //   sorter: (a, b) => a.device_cost.length - b.device_cost.length,
+    // },
+
+    // {
+    //   title: 'Image',
+    //   dataIndex: 'device_image',
+    //   sorter: (a, b) => a.device_image.length - b.device_image.length,
+    // },
+
+    // {
+    //   title: 'Note',
+    //   dataIndex: 'device_note',
+    //   sorter: (a, b) => a.device_note.length - b.device_note.length,
+    // },
+
+    {
+      title: "Status",
+      dataIndex: "device_status",
+      render: (text, record) => (
+        <div>
+          <span
+            className={
+              text === "Sold out"
+                ? "badge bg-inverse-warning"
+                : text === "Not used"
+                ? "badge bg-inverse-success"
+                : "badge bg-inverse-blue"
+            }
+          >
+            {text}
+          </span>
+        </div>
+      ),
+    },
+    {
+      title: "Note",
+      dataIndex: "device_note",
+      sorter: (a, b) => a.device_note.length - b.device_note.length,
+    },
+    // {
+    //   title: "Producer",
+    //   dataIndex: "device_producer",
+    //   sorter: (a, b) => a.device_producer.length - b.device_producer.length,
+    // },
+
+    {
+      title: "Serial",
+      dataIndex: "device_serial",
+      sorter: (a, b) => a.device_serial.length - b.device_serial.length,
+    },
+    {
+      title: "Model",
+      dataIndex: "device_model",
+      sorter: (a, b) => a.device_model.length - b.device_model.length,
+    },
+  
+
+    // {
+    //   title: "Action",
+    //   render: (text, record) => (
+    //     <div className="dropdown profile-action">
+    //       <Button
+    //         type="primary"
+    //         success
+    //         onClick={() => getAssets(text)}
+    //         data-bs-toggle="modal"
+    //         data-bs-target="#add_device"
+    //       >
+    //         <i className="fa fa-plus" />
+    //         Edit
+    //       </Button>
+
+         
+
+    //       <Button
+    //         type="primary"
+    //         danger
+    //         onClick={() => getQRcode(text)}
+    //         data-bs-toggle="modal"
+    //         data-bs-target="#add_device"
+    //       >
+    //         <i className="fa fa-plus" />
+    //         QR
+    //       </Button>
+    //       {/* <Button
+    //         type="primary"
+    //         success
+    //         onClick={() => getQR(text)}
+    //         data-bs-toggle="modal"
+    //         data-bs-target="#add_device"
+    //       >
+    //         <i className="fa fa-plus" />
+    //         QR
+    //       </Button> */}
+    //     </div>
+    //   ),
+    // },
+
+    // {
+    //   title: "Check in / Check out",
+    //   render: (value) => (
+    //     <>
+    //       <Dropdown
+    //         menu={menuProps}
+    //         placement="bottomRight"
+    //         trigger={["click"]}
+    //       >
+    //         <Button type="text" onClick={() => getID2(value)}>
+    //           <MoreOutlined />
+    //         </Button>
+    //       </Dropdown>
+    //     </>
+    //   ),
+    // },
+  ];
 
 
   return (
@@ -414,7 +530,7 @@ const linechartdata = [
           <div className="page-header">
             <div className="row">
               <div className="col-sm-12">
-                <h3 className="page-title">Welcome Admin!</h3>
+                <h3 className="page-title">Welcome {name}</h3>
                 <ul className="breadcrumb">
                   <li className="breadcrumb-item active">Dashboard</li>
                 </ul>
@@ -428,7 +544,7 @@ const linechartdata = [
                 <div className="card-body">
                   <span className="dash-widget-icon"><LaptopOutlined /></span>
                   <div className="dash-widget-info">
-                    <h3>{Admin.length}</h3>
+                    <h3>{lengthDevice}</h3>
                     <span>IT</span>
                   </div>
                 </div>
@@ -439,20 +555,9 @@ const linechartdata = [
                 <div className="card-body">
                   <span className="dash-widget-icon"><FileWordOutlined /></span>
                   <div className="dash-widget-info">
-                    <h3>SOON!</h3>
-                    {/* <h3>{License.length}</h3> */}
-                    <span>License</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-6 col-sm-6 col-lg-6 col-xl-3">
-              <div className="card dash-widget">
-                <div className="card-body">
-                  <span className="dash-widget-icon"><WifiOutlined /></span>
-                  <div className="dash-widget-info">
-                    <h3>SOON!</h3>
-                    <span>Network</span>
+                    {/* <h3>SOON!</h3> */}
+                    <h3>{lengthRepair}</h3>
+                    <span>Repair</span>
                   </div>
                 </div>
               </div>
@@ -462,8 +567,19 @@ const linechartdata = [
                 <div className="card-body">
                   <span className="dash-widget-icon"><UserOutlined /></span>
                   <div className="dash-widget-info">
-                    <h3>SOON!</h3>
+                    <h3>{lengthUser}</h3>
                     <span>User</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-6 col-sm-6 col-lg-6 col-xl-3">
+              <div className="card dash-widget">
+                <div className="card-body">
+                  <span className="dash-widget-icon">< SettingOutlined/></span>
+                  <div className="dash-widget-info">
+                    <h3>{lengthAdmin}</h3>
+                    <span>Admin/It Support</span>
                   </div>
                 </div>
               </div>
@@ -478,84 +594,72 @@ const linechartdata = [
                     <div className="card-body">
                       <h3 className="card-title">Activity</h3>
                       <div className="row">
-                  <div className="col-md-12">
-                    <div className="table-responsive">
-                      <Table className="table-striped"
-                        // pagination={{
-                        //   total: data?.length,
-                        //   showTotal: (total, range) => `Showing ${range[0]} to ${range[1]} of ${total} entries`,
-                        //   showSizeChanger: true, onShowSizeChange: onShowSizeChange, itemRender: itemRender
-                        // }}
-                        style={{ overflowX: 'auto' }}
-                        columns={columns}
+                        <div className="col-md-12">
+                          <div className="table-responsive">
+                            <Table className="table-striped"
+                              // pagination={{
+                              //   total: data?.length,
+                              //   showTotal: (total, range) => `Showing ${range[0]} to ${range[1]} of ${total} entries`,
+                              //   showSizeChanger: true, onShowSizeChange: onShowSizeChange, itemRender: itemRender
+                              // }}
+                              style={{ overflowX: 'auto' }}
+                              columns={columns}
 
-                        dataSource={data}
-                        rowKey={record => record.id}
+                              dataSource={repair}
+                              rowKey={record => record.id}
 
-                      />
-                    </div>
-                  </div>
-                  
-                </div>
-                
-                                           
+                            />
+                          </div>
+                        </div>
+
+                      </div>
+
+
                     </div>
                     <div className="card-footer">
-                  <Link to="/Page/activity">View all Activity</Link>
-                </div>
+                      <Link to="/Page/activity">View all Activity</Link>
+                    </div>
                   </div>
                 </div>
 
                 <div className="col-md-6 text-center">
                   <div className="card">
                     <div className="card-body">
-                      <h3 className="card-title">Asset Categories</h3>
+                      <h3 className="card-title">Asset IT</h3>
                       <div className="row">
-                  <div className="col-md-12">
-                    <div className="table-responsive">
-                      <Table className="table-striped"
-                        // pagination={{
-                        //   total: data?.length,
-                        //   showTotal: (total, range) => `Showing ${range[0]} to ${range[1]} of ${total} entries`,
-                        //   showSizeChanger: true, onShowSizeChange: onShowSizeChange, itemRender: itemRender
-                        // }}
-                        style={{ overflowX: 'auto' }}
-                        columns={columns}
+                        <div className="col-md-12">
+                          <div className="table-responsive">
+                            <Table className="table-striped"
+                              // pagination={{
+                              //   total: data?.length,
+                              //   showTotal: (total, range) => `Showing ${range[0]} to ${range[1]} of ${total} entries`,
+                              //   showSizeChanger: true, onShowSizeChange: onShowSizeChange, itemRender: itemRender
+                              // }}
+                              style={{ overflowX: 'auto' }}
+                              columns={columnsIT}
 
-                        dataSource={data}
-                        rowKey={record => record.id}
+                              dataSource={device}
+                              rowKey={record => record.id}
 
-                      />
-                    </div>
-                  </div>
-                  
-                </div>
+                            />
+                          </div>
+                        </div>
+
+                      </div>
                       {/* <div id="line-charts" /> */}
                     </div>
                     <div className="card-footer">
-                  <Link to="/Page/activity">View all Categories</Link>
-                </div>
+                      <Link to="/Page/device">Asset IT</Link>
+                    </div>
                   </div>
                 </div>
-                
+
               </div>
-              
+
             </div>
           </div>
 
-          
-                
-              
-                <div className="card-body">
-                  <div className="table-responsive">
-                    <table className="table custom-table mb-0">
-                      <div className="modal custom-modal fade" id="delete_approve" role="dialog">
-                        <div className="modal-dialog modal-dialog-centered">
-                          <div className="modal-content">
-                            <div className="modal-body">
-
-
-                            <Modal
+          <Modal
             width={650}
             title="Update"
             open={open}
@@ -746,19 +850,16 @@ const linechartdata = [
             </div>
           </div>
 
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </table>
-                  </div>
-                </div>
-               
-                
-              </div>
-            </div>
-          </div>
+
+
+         
+
+        </div>
+      </div>
+    </div>
+
     
+
 
 
   );

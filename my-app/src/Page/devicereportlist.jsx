@@ -3,7 +3,7 @@ import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import { Dropdown, Table, Tag } from "antd";
 import { MoreOutlined } from "@ant-design/icons";
-import {axiosCMMS as axios} from '../config/axios';
+import { axiosCMMS as axios } from '../config/axios';
 import { itemRender, onShowSizeChange } from "./paginationfunction";
 import {
   Avatar_02,
@@ -320,6 +320,16 @@ const Devicesreportlist = ({ device }) => {
       title: "Asset Tag",
       dataIndex: "device_asset_tag",
       sorter: (a, b) => a.device_asset_tag.length - b.device_asset_tag.length,
+    },
+    {
+      title: "Month",
+      dataIndex: "device_month",
+      sorter: (a, b) => a.device_month.length - b.device_month.length,
+    },
+    {
+      title: "Year",
+      dataIndex: "device_year",
+      sorter: (a, b) => a.device_year.length - b.device_year.length,
     },
   ];
 

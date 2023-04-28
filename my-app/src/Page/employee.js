@@ -619,7 +619,7 @@ const AllEmployees = () => {
       <Sidebar />
       <div className="page-wrapper">
         <Helmet>
-          <title>Employee</title>
+          <title>Admin</title>
           <meta name="description" content="Login page" />
         </Helmet>
         {/* Page Content */}
@@ -628,10 +628,10 @@ const AllEmployees = () => {
           <div className="page-header">
             <div className="row align-items-center">
               <div className="col">
-                <h3 className="page-title">Employee</h3>
+                <h3 className="page-title">Admin</h3>
                 <ul className="breadcrumb">
-                  <li className="breadcrumb-item"><Link to="/Page/admindashboard">Dashboard</Link></li>
-                  <li className="breadcrumb-item active">Employee</li>
+                  <li className="breadcrumb-item"><Link to="/Page/admindashboard">Setting</Link></li>
+                  <li className="breadcrumb-item active">Admin</li>
                 </ul>
               </div>
 
@@ -640,12 +640,12 @@ const AllEmployees = () => {
 
                 <Button type="primary" onClick={showModal} shape='round'
                   className="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_employee"><i className="fa fa-plus" />
-                  Add Employee
+                  Add Admin
                 </Button>
 
                 <Modal
                   width={650}
-                  title="Add employee"
+                  title="Add Admin"
                   open={open}
                   // onOk={hideModal}
                   footer={null}
@@ -676,33 +676,6 @@ const AllEmployees = () => {
 
                     </Form.Item>
 
-                    {/* <Form.Item
-                      name="ID"
-                      label="ID"
-                      rules={[{ required: true, message: 'Please input your ID!' }]}
-                      onChange={(event) => {
-                        setAdmin_id(event.target.value)
-                      }}
-                    >
-                      <Input />
-                    </Form.Item> */}
-
-                    {/* <Form.Item
-                      name="Last Name"
-                      label="Last Name"
-
-                      rules={[{ required: true, message: 'Please input your Last Name', whitespace: true }]}
-                    >
-                      <Input />
-                    </Form.Item> */}
-
-                    {/* <Form.Item
-                      name="nickname"
-                      label="Nickname"
-                      rules={[{ required: true, message: 'Please input your nickname!', whitespace: true }]}
-                    >
-                      <Input />
-                    </Form.Item> */}
 
                     <Form.Item
                       name="role"
@@ -718,19 +691,6 @@ const AllEmployees = () => {
                         <Option value="other">Other</Option>
                       </Select>
                     </Form.Item>
-
-
-                    {/* <Form.Item
-                      name="gender"
-                      label="Gender"
-                      rules={[{ required: true, message: 'Please select gender!' }]}
-                    >
-                      <Select placeholder="select your gender">
-                        <Option value="male">Male</Option>
-                        <Option value="female">Female</Option>
-                        <Option value="other">Other</Option>
-                      </Select>
-                    </Form.Item> */}
 
                     <Form.Item
                       name="email"

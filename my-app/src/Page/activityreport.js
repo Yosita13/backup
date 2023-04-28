@@ -2,25 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import { CSVLink } from "react-csv";
-// import axios from "axios";
-import {axiosCMMS as axios} from '../config/axios';
+import { axiosCMMS as axios } from '../config/axios';
 import { MoreOutlined, EditOutlined, MailOutlined } from "@ant-design/icons";
 import Header from "../initialpage/Sidebar/header";
 import Sidebar from "../initialpage/Sidebar/sidebar";
-import {
-  Form,
-  Input,
-  Select,
-  Row,
-  DatePicker,
-  Dropdown,
-  Button,
-  Col,
-  Modal,
-  Space,
-  Table,
-  Tag,
-} from "antd";
+import {Form,Input,Select,Row,DatePicker,Dropdown,Button,Col,Modal,Space,Table,Tag,} from "antd";
 import { itemRender, onShowSizeChange } from "../Page/paginationfunction";
 import { useLocation } from "react-router-dom";
 
@@ -52,7 +38,7 @@ const Activityreport = () => {
 
   //getAdmin
   useEffect(() => {
-    fetch("http://localhost:5000/DB/tbl_admin")
+    fetch("/DB/tbl_admin")
       .then((response) => response.json())
       .then((data) => setOptions(data))
       .catch((error) => console.log(error));
@@ -69,7 +55,7 @@ const Activityreport = () => {
   const getforjoin = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:5000/DB/get/get/for/join"
+        "/DB/get/get/for/join"
       );
 
       //console.log('help',data.admin_name)
@@ -84,7 +70,7 @@ const Activityreport = () => {
   const getActivity2 = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:5000/DB/get/get/for/join"
+        "/DB/get/get/for/join"
       );
 
       //console.log('help',data.admin_name)
@@ -97,7 +83,7 @@ const Activityreport = () => {
   };
 
   const onReset = () => {
-    form.resetFields();
+    form2.resetFields();
     getforjoin();
   };
   const headers = [
@@ -120,7 +106,7 @@ const Activityreport = () => {
     console.log("Received values of form: ", values);
     try {
       const { data } = await axios.put(
-        `http://localhost:5000/DB/update/status/${editStatus}`,
+        `/DB/update/status/${editStatus}`,
         {
           id: values.editStatus,
           status: values.Status,
@@ -142,26 +128,27 @@ const Activityreport = () => {
     //console.log('value.admin_id',admin_id);
     //console.log('typeof value.id',typeof value.id)
 
-    if (value.name === undefined) {
-      const act = activity.filter((act) => act.id === Number(value.id));
+    if (value.status === undefined) {
+      const act = activity.filter(
+        (act) => act.priority && act.priority.split(" ")[0] === value.priority
+      );
       setActivity(act);
-      console.log("emp.activityid", value.id);
+      //console.log("emp.activityid", value.id);
       console.log("name_undefine", act);
       console.log("แต๋มสวย");
       // alert(`${Admin}`)
-    } else if (value.id === undefined) {
+    } else if (value.priority === undefined) {
       const act = activity.filter(
-        (act) =>
-          act.employee_name && act.employee_name.split(" ")[0] === value.name
+        (act) => act.status && act.status.split(" ")[0] === value.status
       );
       setActivity(act);
       console.log("id undefind", act);
       console.log("แต๋มขี้เหล่");
-    } else if (value.name !== undefined && value.id !== undefined) {
+    } else if (value.priority !== undefined && value.status !== undefined) {
       const act1 = activity.filter(
         (act1) =>
-          act1.id === Number(value.id) &&
-          act1.employee_name.split(" ")[0] === value.name
+        act1.priority.split(" ")[0] === value.priority &&
+        act1.status.split(" ")[0] === value.status
       );
       setActivity(act1);
       console.log("1", act1);
@@ -174,7 +161,7 @@ const Activityreport = () => {
     console.log("editstatus", editStatus);
     console.log("editstatus", priority);
     const { data } = axios
-      .get(`http://localhost:5000/DB/get/status/${editStatus}`)
+      .get(`/DB/get/status/${editStatus}`)
       .then((response) => {
         const defaultValue = {
           Priority: priority,
@@ -218,7 +205,7 @@ const Activityreport = () => {
     //setIsModalOpen(false);
     hideModal2();
 
-    const { data } = axios.post("http://localhost:5000/DB/sendEmail", {
+    const { data } = axios.post("/DB/sendEmail", {
       status: Status,
       employee_email: values,
     });
@@ -360,7 +347,7 @@ const Activityreport = () => {
         <div>
           <span
             className={
-              text === "In progress"
+              text === "Progress"
                 ? "badge bg-inverse-warning"
                 : text === "Complete"
                 ? "badge bg-inverse-success"
@@ -379,22 +366,22 @@ const Activityreport = () => {
       sorter: (a, b) => a.case_detail.length - b.case_detail.length,
     },
 
-    {
-      title: "Action",
-      render: (value) => (
-        <>
-          <Dropdown
-            menu={menuProps}
-            placement="bottomRight"
-            trigger={["click"]}
-          >
-            <Button type="text" onClick={() => getID(value)}>
-              <MoreOutlined />
-            </Button>
-          </Dropdown>
-        </>
-      ),
-    },
+    // {
+    //   title: "Action",
+    //   render: (value) => (
+    //     <>
+    //       <Dropdown
+    //         menu={menuProps}
+    //         placement="bottomRight"
+    //         trigger={["click"]}
+    //       >
+    //         <Button type="text" onClick={() => getID(value)}>
+    //           <MoreOutlined />
+    //         </Button>
+    //       </Dropdown>
+    //     </>
+    //   ),
+    // },
   ];
 
   return (
@@ -421,100 +408,27 @@ const Activityreport = () => {
                   <li className="breadcrumb-item active">Activity</li>
                 </ul>
               </div>
-              <div className="col-sm-6 col-md-2"></div>
+              <div className="col-sm-6 col-md-2">
+                <CSVLink
+                  data={activity}
+                  headers={headers}
+                  filename="Activities Report.csv"
+                >
+                  <Button
+                    type="primary"
+                    onClick={showModal}
+                    shape="round"
+                    className="btn add-btn"
+                    data-bs-toggle="modal"
+                    //data-bs-target="#add_device"
+                  >
+                    <i className="fa fa-plus" />
+                    Export
+                  </Button>
+                </CSVLink>
+              </div>
             </div>
           </div>
-
-          <Modal
-            width={650}
-            title="Update"
-            open={open}
-            // onOk={hideModal}
-            footer={null}
-            onCancel={hideModal}
-            okText="submit"
-            cancelText="cancle"
-          >
-            {initialValues && (
-              <Form
-                initialValues={initialValues}
-                {...formItemLayout}
-                form={form}
-                name="save"
-                onFinish={onFinish}
-                scrollToFirstError
-              >
-                {/* //edit 16/4/2023 */}
-                <Form.Item
-                  name="Priority"
-                  label="Priority"
-                  rules={[
-                    { required: true, message: "Please select priority!" },
-                  ]}
-                  onChange={(event) => {
-                    setPriority(event.target.value);
-                  }}
-                >
-                  <Select placeholder="select select priority">
-                    <Option value="Hight">Hight</Option>
-                    <Option value="Normal">Normal</Option>
-                  </Select>
-                </Form.Item>
-                {/* //edit 16/4/2023 */}
-
-                {/* //edit 16/4/2023 */}
-                <Form.Item
-                  name="Status"
-                  label="Status"
-                  rules={[{ required: true, message: "Please select status!" }]}
-                  onChange={(event) => {
-                    setStatus(event.target.value);
-                  }}
-                >
-                  <Select placeholder="select status device">
-                    <Option value="In progress">In progress</Option>
-                    <Option value="Success">Success</Option>
-                    <Option value="Complete">Complete</Option>
-                  </Select>
-                </Form.Item>
-                {/* //edit 16/4/2023 */}
-
-                <Form.Item
-                  name="Responsible"
-                  label="Responsible"
-                  rules={[
-                    { required: true, message: "Please select Responsible!" },
-                  ]}
-                  onChange={(event) => {
-                    setStatus(event.target.value);
-                  }}
-                >
-                  <Select placeholder="Please select Responsible">
-                    {options.map((options) => (
-                      <option key={options.admin_id} value={options.admin_id}>
-                        {options.admin_name}
-                      </option>
-                    ))}
-                  </Select>
-                </Form.Item>
-
-                <Form.Item {...tailFormItemLayout}>
-                  <Row>
-                    <Col span={12} style={{ textAlign: "left" }}>
-                      <Button type="primary" htmlType="submit">
-                        save
-                      </Button>
-                    </Col>
-                    <Col span={12} style={{ textAlign: "right" }}>
-                      <Button type="primary" danger onClick={hideModal}>
-                        Cancle
-                      </Button>
-                    </Col>
-                  </Row>
-                </Form.Item>
-              </Form>
-            )}
-          </Modal>
 
           {/* model2 */}
 
@@ -626,39 +540,57 @@ const Activityreport = () => {
           </div>
 
           <Form form={form2} name="control-hooks" onFinish={onFinish2}>
-            {/* <div className="row filter-row">
+            <div className="row filter-row">
               <Form.Item
                 style={{
                   marginBottom: 0,
                 }}
               >
                 <Form.Item
-                  name="id"
+                  name="status"
                   style={{
                     display: "inline-block",
                     width: "calc(50% - 8px)",
                   }}
                 >
-                  <input
+                  {/* <input
                     className="form-control floating"
-                    placeholder="Activity ID"
-                  />
+                    placeholder="Status"
+                  /> */}
+                  <Select
+                    //className="form-control floating"
+                    placeholder="Search export status"
+                  >
+                    <Option value="Progress">Progress</Option>
+                    <Option value="Success">Success</Option>
+                    <Option value="Complete">Complete</Option>
+                  </Select>
                 </Form.Item>
                 <Form.Item
-                  name="name"
+                  name="priority"
                   style={{
                     display: "inline-block",
                     width: "calc(50% - 8px)",
                     margin: "0 8px",
                   }}
                 >
-                  <input className="form-control floating" placeholder="Name" />
+                  {/* <input
+                    className="form-control floating"
+                    placeholder="Priority"
+                  /> */}
+                  <Select
+                    //className="form-control floating"
+                    placeholder="Search export priority"
+                  >
+                    <Option value="Hight">Hight</Option>
+                    <Option value="Normal">Normal</Option>
+                  </Select>
                 </Form.Item>
               </Form.Item>
-            </div> */}
+            </div>
 
             <Form.Item>
-              <CSVLink
+              {/* <CSVLink
                 data={activity}
                 headers={headers}
                 filename="Activities Report.csv"
@@ -671,7 +603,26 @@ const Activityreport = () => {
                 >
                   Export
                 </Button>
-              </CSVLink>
+              </CSVLink> */}
+              <div className="col-sm-6 col-md-4" style={{ textAlign: "left" }}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  className="btn btn-success btn-block w-20"
+                >
+                  Search
+                </Button>
+                <Button
+                  htmlType="button"
+                  className="btn btn-danger btn-block w-20 "
+                  style={{ marginLeft: "5px" }}
+                  onClick={onReset2}
+                >
+                  Reset
+                </Button>
+
+                <div></div>
+              </div>
             </Form.Item>
           </Form>
         </div>

@@ -9,7 +9,7 @@ import '../Sidebar/navbar.css'
 
  import LogoOnlineAssest from '../Sidebar/img/LogoOnlineAssest.png';
 // import user from '../Sidebar/img/user.jpg';
-import { DownOutlined, BellOutlined } from '@ant-design/icons';
+import { DownOutlined, BellOutlined ,LogoutOutlined} from '@ant-design/icons';
 import { Dropdown, Space } from 'antd';
 import { Button, message, Popconfirm } from 'antd';
 import { Avatar, Badge } from 'antd';
@@ -24,6 +24,8 @@ import LogOut from "../Sidebar/img/LogOut.svg";
 
 const Header = (props) => {
   let history = useHistory()
+  const name = localStorage.getItem('name');
+
   const handlesidebar = () => {
     document.body.classList.toggle('mini-sidebar');
   }
@@ -51,19 +53,7 @@ const Header = (props) => {
     },
   ];
 
-  const text = 'Are you sure to delete this task?';
-  const description = 'Delete the task';
-  const confirm = () => {
-    
-    message.info('Clicked on Yes.');
-    <Link to= "/Page/activity"></Link>
-
-  };
-  const cancel = () => {
-    message.info('Clicked on no.');
-  };
-
-
+  
   
 
 
@@ -96,74 +86,16 @@ const Header = (props) => {
       <a id="mobile_btn" className="mobile_btn" href="#" onClick={() => onMenuClik()}><img src = {bars} /></a>
       {/* Header Menu */}
       <ul className="nav user-menu">
-
-{/* 
         <li className="nav-item dropdown has-arrow main-drop">
-          <a href="#" className="nav-item dropdown has-arrow main-drop">
-
-            <Popconfirm
-              title="Activity"
-              description="You have new Activity is not update status"
-              onConfirm={confirm}
-              onCancel={cancel}
-              okText="update"
-              cancelText="decline" 
-            >
-              <Button type="link">
-                {/* <Badge count={3} size="small"> */}
-                {/* <Badge dot>
-                  <Avatar shape="circle" size="medium" icon={<BellOutlined />} />
-
-                </Badge></Button>
-            </Popconfirm> */}
-          {/* </a>
-
-        </li>  */}
-
-{/* navbar */}
-      {/* <div className="navbar">
-      <div className="icons">
-        <div className="icon">
-          <img src={bell} className="iconImg" alt="" />
-            <div className="counter">2</div>
-        </div>
-        </div>
-    </div> */}
-{/* navbar */}
-
-
-        <li className="nav-item dropdown has-arrow main-drop">
-          <a href="#">
-            {/* <Dropdown menu={{ items }} trigger={['click']}>
-              <a onClick={(e) => e.preventDefault()}>
-                <span className="user-img me-1"><img src={''} alt="" />
-                  <span /></span>
-                <span>
-                  Click me
-                  <DownOutlined />
-                </span>
-              </a>
-            </Dropdown> */}
-          </a>
-          <Button onClick={logout}>
-                <span type='primary' className='btn-gray-1000'shape='square'><img src={''} alt="" />
-                  <span /></span>
-                  <img src={LogOut } /> 
-                  {/* <span> logout </span> */}
-                 
-                  
-               
-              </Button>
-
+          <a href="#" > </a>
+         
+          <Button type="link" className = "text-success"onClick={logout}> <text>{name}</text> 
+              <Avatar shape="circle" size="medium"  > <img src={LogOut } /> </Avatar>
+          </Button>
         </li>
-
-
-
       </ul>
       {/* /Header Menu */}
-
-
-
+     
 
 
 

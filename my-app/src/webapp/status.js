@@ -139,9 +139,9 @@ console.log(detail)
                                                             {/* <h3>{License.length}</h3> */}
                                                             {/* <span>License</span> */}
 
-                                                            <Col>
+                                                            {/* <Col>
                                                                 <Button type="primary" htmlType="submit" className="btn-gray-1000" onClick={getStatusForConfrim}>ยืนยันการรับเครื่อง </Button>
-                                                            </Col>
+                                                            </Col> */}
                                                         </div>
                                                     </div>
                                                 </div>

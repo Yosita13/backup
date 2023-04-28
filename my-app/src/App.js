@@ -28,7 +28,7 @@
 //   return (
 //       <Router>
 //           <Switch>
-//               <Route exact path="/Page/admindashboard" render={(props) => (<Admindashboard/>)}></Route>
+//               {/* <Route exact path="/Page/admindashboard" render={(props) => (<Admindashboard/>)}></Route>
 //               <Route path="/Page/estimate" render={(props) => (<Estimates/>)}></Route>
 //               <Route path="/Page/home" render={(props) => (<Home/>)}></Route>
 //               <Route path="/Page/header" render={(props) => (<Header/>)}></Route>
@@ -39,9 +39,9 @@
 //               <Route path="/Page/employee" render={(props) => (<Employee/>)}></Route>
 //               <Route path="/Page/test" render={(props) => (<Test/>)}></Route>
 //               <Route path="/Page/activity" render={(props) => (<Activity/>)}></Route>
-//               <Redirect to={{pathname: '/Page/admindashboard'}}/>
+//               <Redirect to={{pathname: '/Page/admindashboard'}}/> */}
 
-//               {/* <Route exact path="/webapp/QR" render={(props) => (<QR/>)}></Route> */}
+//               <Route exact path="/webapp/QR" render={(props) => (<QR/>)}></Route>
 //               <Route path="/webapp/QR" render={(props) => (<QR/>)}></Route>
 //               <Route path="/webapp/userhome" render={(props) => (<Userhome/>)}></Route>
 //               <Route path="/webapp/TakePhoto" render={(props) => (<TakePhoto/>)}></Route>
@@ -51,7 +51,7 @@
 //               <Route path="/webapp/uploadImage" render={(props) => (<UploadImage/>)}></Route>
 //               <Route path="/webapp/WebappHeader" render={(props) => (<WebappHeader/>)}></Route>
 //               <Route path= "/webapp/sendRepairFinish" render={(props) => (<SendRepairFinish/>)}></Route>
-//               {/* <Redirect to={{pathname: '/webapp/QR'}}/> */}
+//               <Redirect to={{pathname: '/webapp/QR'}}/>
 //           </Switch>
 //       </Router>
 
@@ -111,6 +111,7 @@ import License from "./Page/license";
 //import Admin from
 import Loginpage from "./Page/login";
  import Itsupport from './Page/itsupport'
+ import Checkin from './Page/Checkin'
 
 const App = () => {
     return (
@@ -147,6 +148,7 @@ const App = () => {
                 <Route path="/Page/categorylist" render={(props) => <ategorylist />} ></Route>
                 <Route path="/Page/category" render={(props) => <category />}></Route>
                 <Route path="/Page/Devicelist" render={(props) => <Deviceslist />}></Route>
+                <Route path="/Page/checkin" render={(props) => <Checkin />}></Route>
                 {/* <Route path="/Page/device" render={(props) => <device />}></Route> */}
                 <Route path="/Page/test" render={(props) => <Test />}></Route>
                 <Route path="/Page/activity" render={(props) => <Activity />}></Route>

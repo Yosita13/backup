@@ -639,8 +639,8 @@ const Employeeslist = ({Admin}) => {
                   <Form.Item>
                     {/* Delete Leave Modal */}
                     <div className="form-header">
-                      <h3>Delete Leave</h3>
-                      <p>Are you sure want to delete this leave?</p>
+                      <h3>Delete Admin</h3>
+                      <p>Are you sure want to delete this admin?</p>
                     </div>
 
                     <div className="modal-btn delete-action">

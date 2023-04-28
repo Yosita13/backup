@@ -625,7 +625,7 @@ const Itsupport = () => {
       <Sidebar />
       <div className="page-wrapper">
         <Helmet>
-          <title>Employee</title>
+          <title>Admin</title>
           <meta name="description" content="Login page" />
         </Helmet>
         {/* Page Content */}
@@ -634,10 +634,10 @@ const Itsupport = () => {
           <div className="page-header">
             <div className="row align-items-center">
               <div className="col">
-                <h3 className="page-title">Employee</h3>
+                <h3 className="page-title">Admin</h3>
                 <ul className="breadcrumb">
-                  <li className="breadcrumb-item"><Link to="/Page/admindashboard">Dashboard</Link></li>
-                  <li className="breadcrumb-item active">Employee</li>
+                  <li className="breadcrumb-item"><Link to="/Page/admindashboard">Setting</Link></li>
+                  <li className="breadcrumb-item active">Admin</li>
                 </ul>
               </div>
 
@@ -875,7 +875,7 @@ const Itsupport = () => {
                   
                   
                 >
-                  <input className="form-control floating"  placeholder="Employee ID" />
+                  <input className="form-control floating"  placeholder="Admin ID" />
                 </Form.Item>
                 <Form.Item
                   name="name"
@@ -886,7 +886,7 @@ const Itsupport = () => {
                     margin: '0 8px',
                   }}
                 >
-                  <input className="form-control floating" placeholder="Employee Name" />
+                  <input className="form-control floating" placeholder="Admin Name" />
                 </Form.Item>
               </Form.Item>
               

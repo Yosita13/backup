@@ -29,6 +29,7 @@
     "react-custom-scrollbars": "^4.2.1",
     "react-custom-scrollbars-2": "^4.5.0",
     "react-data-table-component": "^7.5.3",
+    "react-datepicker": "^4.11.0",
     "react-dom": "^16.0.0",
     "react-helmet": "^6.1.0",
     "react-hook-form": "^7.42.0",
