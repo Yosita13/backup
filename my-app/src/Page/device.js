@@ -5,13 +5,15 @@ import { DownOutlined } from "@ant-design/icons";
 import Header from "../initialpage/Sidebar/header";
 import Sidebar from "../initialpage/Sidebar/sidebar";
 import { Button, Col, Modal,} from "antd";
-import { Form, Input, Select, Row } from "antd";
+import { Form, Input, Select, Row ,DatePicker} from "antd";
 import Deviceslist from "../Page/devicelist";
 import { useLocation } from "react-router-dom";
 import QRCode from "qrcode.react";
 import { axiosCMMS as axios } from '../config/axios';
 import { useHistory } from "react-router-dom";
 import {  EditOutlined, MailOutlined } from "@ant-design/icons";
+
+
 
 const { Option } = Select;
 
@@ -27,10 +29,10 @@ const AllAsset = () => {
   const [form3] = Form.useForm();
   const [form4] = Form.useForm();
   const [device_name, setdevice_name] = useState("");
-  const [device_warranty, setdevice_warranty] = useState("");
+  const [device_warranty, setDevice_warranty] = useState("");
   const [device_producer, setdevice_producer] = useState("");
   const [device_cost, setdevice_cost] = useState("");
-  const [device_image, setdevice_image] = useState("");
+  const [type, setType] = useState("");
   const [device_model, setdevice_model] = useState("");
   const [device_serial, setdevice_serial] = useState("");
   const [device_asset_tag, setdevice_asset_tag] = useState("");
@@ -39,11 +41,12 @@ const AllAsset = () => {
   const [device_note, setdevice_note] = useState("");
   const [device_status, setdevice_status] = useState("");
   const [device_spare, setdevice_spare] = useState("");
-  const [device_date, setdevice_date] = useState("");
-  const [device_month, setdevice_month] = useState("");
-  const [device_year, setdevice_year] = useState("");
+  const [device_date, setDevice_date] = useState("");
+  const [device_month, setDevice_month] = useState("");
+  const [device_year, setDevice_year] = useState("");
   const [employee_id, setEmployee_id] = useState("");
   const [device_category_id, setdevice_category_id] = useState("");
+  const [deviceWarranty, setDeviceWarranty] = useState();
   const [editStatus, setEditStatus] = useState();
   const [device_id, setdevice_id] = useState("");
   const [dataAsset, setDataAsset] = useState();
@@ -58,6 +61,19 @@ const AllAsset = () => {
   let history = useHistory();
   const id = location.state;
   console.log("ID", location.state);
+
+  
+  useEffect(() => {
+    getDevice();
+  }, []);
+
+  const getDevice = async () => {
+    try {
+      const { data } = await axios.get("/DB/tbl_device");
+      // console.log(data.length)
+      setDevice(data);
+    } catch (error) {}
+  };
   
   const getAssets = (values) => {
     debugger;
@@ -136,84 +152,8 @@ const AllAsset = () => {
     }
   };
 
-  const handleSubmit = (e) => {
-    // axios.post("/DB/tbl_list_repair2", postImage)
-    // .then(res=>console.log(res))
-    // e.preventDefault();
-    console.log("postImage", postImage);
-
-    var blob = new Blob(["1678684514063-8853042000109.jpg"], {
-      type: "image/jpeg",
-    });
-    var blobUrl = URL.createObjectURL(blob);
-    console.log("blob", blob);
-    console.log("blobURL", blobUrl);
-    setPicture({
-      ...picture,
-      file: blob,
-      filepreview: blobUrl,
-    });
-    setPicture(blobUrl);
-    createPost(postImage);
-  };
-  console.log("pic", picture);
-  console.log("useinfo", userInfo);
-
-  const convertToBase64 = (file) => {
-    console.log("file", file);
-    return new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
-      fileReader.onload = () => {
-        resolve(fileReader.result);
-      };
-      fileReader.onerror = (error) => {
-        reject(error);
-      };
-    });
-  };
-
-  const handleInputChange = async (event) => {
-    setuserInfo({
-      ...userInfo,
-      file: event.target.files[0],
-      filepreview: URL.createObjectURL(event.target.files[0]),
-    });
-    // setData(event.target.value);
-    // setQrCodeVisible(false);
-
-    console.log("event", event.target.files[0]);
-
-    const file = event.target.files[0];
-    console.log("file0", file);
-    const base64 = await convertToBase64(file);
-    setPostImage({ ...postImage, myFile: base64 });
-  };
-  const handleInputChange2 = (event) => {
-    setData(event.target.value);
-    setQrCodeVisible(false);
-  };
-  const handleGenerateQRCode = (event) => {
-    event.preventDefault();
-    setQrCodeVisible(true);
-  };
-  //console.log('employeeID', EmployeeID);
-  const handleDownload = () => {
-    const canvas = document.getElementById("qrcode");
-    const pngUrl = canvas
-      .toDataURL("image/png")
-      .replace("image/png", "image/octet-stream");
-    downloadURI(pngUrl, "qrcode.png");
-  };
-
-  const downloadURI = (uri, name) => {
-    const link = document.createElement("a");
-    link.download = name;
-    link.href = uri;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+ 
+  
   const onFinish = async (values) => {
     setOpenAdd(false);
     form.resetFields();
@@ -225,89 +165,53 @@ const AllAsset = () => {
         {
           device_id: values.ID,
           device_name: values.Name,
-          device_warranty: values.warranty,
+          device_warranty: device_warranty,
           device_producer: values.producer,
           device_cost: values.cost,
-          device_image: values.image,
           device_note: values.note,
           device_status: values.status,
           device_model: values.model,
           device_serial: values.serial,
           device_asset_tag: values.asset_tag,
-          device_year: values.year,
-          device_month: values.month,
-          device_date: values.date,
+          device_type:values.type,
          
          
         }
       );
       console.log(data);
       alert("success!!");
-      //window.location.reload();
+      getDevice()
     } catch (e) {}
   };
+
 
   const onFinish2 = (value) => {
     console.log("fillter", value);
     console.log("device", Device);
-    //console.log('value.admin_id',admin_id);
-    //console.log('typeof value.id',typeof value.id)
-
     if (value.name === undefined) {
       const emp = Device.filter((emp) => emp.device_id === Number(value.id));
       setDevice(emp);
       console.log("emp.deviceid", value.id);
       console.log("name_undefine", emp);
       console.log("แต๋มสวย");
-      // alert(`${Admin}`)
+  
     } else if (value.id === undefined) {
       const emp = Device.filter(
         (emp) => emp.device_name.split(" ")[0] === value.name
-        //(emp) => emp.device_status.split(" ")[0] === value.status
       );
-      // const emp1 = Device.filter(
-      //   //(emp) => emp.device_name.split(" ")[0] === value.name
-      //   (emp1) => emp1.device_status.split(" ")[0] === value.status
-      // );
       setDevice(emp);
-      //setDevice(emp1);
       console.log("id undefind", emp);
       console.log("แต๋มขี้เหล่");
     }
-    //else if (value.status === undefined) {
-    //   const emp = Device.filter(
-    //     (emp) => emp.device_status === Number(value.id)
-    //   );
-    //   setDevice(emp);
-    //   console.log("emp.deviceid", value.id);
-    //   console.log("name_undefine", emp);
-    //   console.log("แต๋มสวย");
-    //   // alert(`${Admin}`)
-    // }
-    else if (
-      value.name !== undefined &&
-      value.id !== undefined
-      //value.status !== undefined
-    ) {
+    else if (value.name !== undefined &&value.id !== undefined ) {
       const emp1 = Device.filter(
         (emp1) =>
           emp1.device_id === Number(value.id) &&
           emp1.device_name.split(" ")[0] === value.name
-        //emp1.device_status.split(" ")[0] === value.status
       );
-      //const emp2 = Admin.filter((emp2) => emp2.admin_name.split(" ")[0] === value.name)
       setDevice(emp1);
       console.log("1", emp1);
-      //console.log('2',emp2);
-
-      // if(Admin.filter((Admin) => Admin.admin_id !== value.id) ||  Admin.filter((Admin) => Admin.admin_name.split(" ")[0] !== value.name)){
-      //   setAdmin([])
-      //   console.log('3');
-      // }
-      // else if(Admin.filter((Admin) => Admin.admin_id === value.id) &&  Admin.filter((Admin) => Admin.admin_name.split(" ")[0] === value.name)){
-      //   setAdmin(emp1)
-      //   console.log('4');
-      // }
+     
     }
   };
 
@@ -316,62 +220,8 @@ const AllAsset = () => {
     getDevice();
   };
 
-  const Finish = async (values) => {
-    setOpen(false);
-    form.resetFields();
-    console.log("Received values of form: ", values);
-    try {
-      const { data } = await axios.put(
-        `/DB/update/${values.device_id}`,
-        {
-          device_id: values.device_id,
-          device_name: values.device_name,
-          device_warranty: values.device_warranty,
-          device_producer: values.device_producer,
-          device_cost: values.device_cost,
-          device_image: values.device_image,
-          device_note: values.device_note,
-          device_status: values.device_status,
-          device_model: values.device_model,
-          device_serial: values.device_serial,
-          device_asset_tag: values.device_asset_tag,
-          device_spare: values.device_spare,
-        }
-      );
-      // console.log(data.length)
-      alert("success!!");
-    } catch (error) {}
-  };
 
-  useEffect(() => {
-    getDevice();
-  }, []);
-
-  const getDevice = async () => {
-    try {
-      const { data } = await axios.get("/DB/tbl_device");
-      // console.log(data.length)
-      setDevice(data);
-    } catch (error) {}
-  };
-
-  const getStatus = (values) => {
-    console.log("editstatus", editStatus);
-    //console.log("editstatus", priority);
-    const { data } = axios
-      .get(`/DB/get/status/${editStatus}`)
-      .then((response) => {
-        const defaultValue = {
-          //Priority: priority,
-          Status: device_status,
-          //Responsible: responsible,
-        };
-        console.log("222", defaultValue);
-        setInitialValues(defaultValue);
-      });
-   // showModal();
-    setOpen(true);
-  };
+  
 
   const toggleMobileMenu = () => {
     setMenu(!menu);
@@ -552,7 +402,7 @@ const AllAsset = () => {
                     </Form.Item>
 
 
-                    <Form.Item
+                    {/* <Form.Item
                       name="warranty"
                       label="warranty"
                       rules={[
@@ -567,6 +417,10 @@ const AllAsset = () => {
                       }}
                     >
                       <Input />
+                    </Form.Item> */}
+
+                    <Form.Item label="Warranty Expired">
+                      <DatePicker onChange={setDevice_warranty}/>
                     </Form.Item>
 
                     <Form.Item
@@ -632,9 +486,9 @@ const AllAsset = () => {
                       }}
                     >
                       <Select placeholder="select status device">
-                        <Option value="Used">Used</Option>
-                        <Option value="Not used">Not used</Option>
-                        <Option value="Sold out">Sold out</Option>
+                        <Option value="Available">Available</Option>
+                        <Option value="Not Available">Not Available</Option>
+                        {/* <Option value="Send Out">Send Out</Option> */}
                       </Select>
                     </Form.Item>
 
@@ -688,70 +542,24 @@ const AllAsset = () => {
                     >
                       <Input />
                     </Form.Item>
+
+                    
                     <Form.Item
-                      name="date"
-                      label="date"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please input date",
-                          whitespace: true,
-                        },
-                      ]}
+                      name="type"
+                      label="type"
+                      rules={[{ required: true, message: "Please select status!" }]}
                       onChange={(event) => {
-                        setdevice_asset_tag(event.target.value);
+                        setType(event.target.value);
                       }}
                     >
-                      <Input />
-                    </Form.Item>
-                    <Form.Item
-                      name="month"
-                      label="month"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please input month",
-                          whitespace: true,
-                        },
-                      ]}
-                      onChange={(event) => {
-                        setdevice_asset_tag(event.target.value);
-                      }}
-                    >
-                      <Select
-                        //className="form-control floating"
-                        placeholder="month"
-                      >
-                        <Option value="January">January</Option>
-                        <Option value="Fabuary">Fabuary</Option>
-                        <Option value="March">March</Option>
-                        <Option value="April">April</Option>
-                        <Option value="May">May</Option>
-                        <Option value="June">June</Option>
-                        <Option value="July">July</Option>
-                        <Option value="August">August</Option>
-                        <Option value="September">September</Option>
-                        <Option value="October">October</Option>
-                        <Option value="November">November</Option>
-                        <Option value="December">December</Option>
+                      <Select placeholder="select type of device">
+                        <Option value="monitor">Monitor</Option>
+                        <Option value="PC">PC</Option>
+                        <Option value="Phone">Phone</Option> 
                       </Select>
                     </Form.Item>
-                    <Form.Item
-                      name="year"
-                      label="year"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please input year ex.2023",
-                          whitespace: true,
-                        },
-                      ]}
-                      onChange={(event) => {
-                        setdevice_asset_tag(event.target.value);
-                      }}
-                    >
-                      <Input />
-                    </Form.Item>
+
+                    
                    
                     <Form.Item {...tailFormItemLayout}>
                       <Row>

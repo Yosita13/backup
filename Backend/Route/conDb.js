@@ -7,6 +7,9 @@ const path = require('path');
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
 const bcrypt = require('bcrypt');
+const moment = require('moment-timezone');
+
+
 dotenv.config();
 
 
@@ -314,15 +317,17 @@ router.get('/get/activity',async (req,res,next) => {
 
 
 
-//update Repair_Status edit 16/04/2023
+//update Repair_Status For damin
 router.put ("/update/status/:id" ,(req,res,next) => {
     const id = req.params.id;
     const admin_id = req.body.admin_id;
     const status = req.body.status;
     const priority = req.body.priority;
+    const updated_timestamp = moment().tz('Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');;
+
 
     console.log('edit55',req.body)
-    connect.query('UPDATE tbl_repair SET status=?,admin_id=?,priority=? WHERE id = ?',[status,admin_id,priority,id],
+    connect.query('UPDATE tbl_repair SET admin_id=?,updated_timestamp=? WHERE id = ?',[admin_id,updated_timestamp,id],
     (err,result) => {
         if (err){
             console.log(err);
@@ -333,6 +338,31 @@ router.put ("/update/status/:id" ,(req,res,next) => {
         }
     })
 })
+
+
+//update Repair_Status For IT supp
+router.put ("/update/statusForIT/:id" ,(req,res,next) => {
+  const id = req.params.id;
+  const admin_id = req.body.admin_id;
+  const status = req.body.status;
+  const priority = req.body.priority;
+  const updated_timestamp = moment().tz('Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');;
+
+
+  console.log('edit55',req.body)
+  connect.query('UPDATE tbl_repair SET status=?,priority=?,updated_timestamp=? WHERE id = ?',[status,priority,updated_timestamp,id],
+  (err,result) => {
+      if (err){
+          console.log(err);
+      
+      }
+      else{
+          res.send("Values updated");
+      }
+  })
+})
+
+
 
 //update Repair_Status when user accep device 
 router.put ("/update/statusComplete/:id" ,(req,res,next) => {
@@ -417,28 +447,71 @@ router.get ("/getDataDevice/:device_id" ,(req,res,next) => {
 })
 
 
+//getlengh status ForAdmin
+router.get("/getCountStatus/", (req, res, next) => {
+ 
+  connect.query(
+    "SELECT SUM(CASE WHEN status='success' THEN 1 ELSE 0 END) AS success_count, SUM(CASE WHEN status='In Progress' THEN 1 ELSE 0 END) AS progress_count, SUM(CASE WHEN status='Complete' THEN 1 ELSE 0 END) AS complete_count FROM tbl_repair",
+    (err, rows) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.send(rows[0]);
+      }
+    }
+  );
+});
+
+//getlengh status ForIT
+router.get("/getCountStatusForIT/:admin_id", (req, res, next) => {
+  const adminId = req.params.admin_id;
+
+  connect.query(
+    `SELECT SUM(CASE WHEN status='ซ่อมเสร็จแล้ว' THEN 1 ELSE 0 END) AS success_count, 
+     SUM(CASE WHEN status='กำลังซ่อม' THEN 1 ELSE 0 END) AS progress_count, 
+     SUM(CASE WHEN status='ส่งคืนเครื่องเรียบร้อย' THEN 1 ELSE 0 END) AS complete_count 
+     FROM tbl_repair WHERE admin_id = ?`,
+    [adminId],
+    (err, rows) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.send(rows[0]);
+      }
+    }
+  );
+});
+
+
+
 //get status for Repair_Status edit 16/04/2023
 router.get ("/get/get/for/join" ,(req,res,next) => {
-    const sql = `
-        SELECT r.id, e.employee_name, e.employee_email,d.device_id,d.device_serial, d.device_model, r.case_detail,r.priority,r.status,a.admin_name
-        FROM tbl_repair AS r 
-        LEFT JOIN tbl_device AS d ON r.device_id = d.device_id
-        LEFT JOIN tbl_owner AS o ON d.device_id = o.device_id
-        LEFT JOIN tbl_employee AS e ON o.employee_id = e.employee_id
-        LEFT JOIN tbl_admin AS a ON r.admin_id = a.admin_id
-        
-        ORDER BY r.id DESC
-    `;
+  const sql = `
+      SELECT r.id, e.employee_name, e.employee_email,d.device_id,d.device_serial, d.device_model, r.case_detail,r.priority,r.status,a.admin_name,r.created_timestamp,r.updated_timestamp
+      FROM tbl_repair AS r 
+      LEFT JOIN tbl_device AS d ON r.device_id = d.device_id
+      LEFT JOIN tbl_owner AS o ON d.device_id = o.device_id
+      LEFT JOIN tbl_employee AS e ON o.employee_id = e.employee_id
+      LEFT JOIN tbl_admin AS a ON r.admin_id = a.admin_id
+      
+      ORDER BY r.id DESC
+  `;
 
-    connect.query(sql, (error, results, fields) => {
-        if (error) {
-            console.log(error);
-            res.status(500).json({error: 'Error fetching data from database.'});
-        } else {
-            res.json(results);
-        }
-    });
-})
+  connect.query(sql, (error, results, fields) => {
+      if (error) {
+          console.log(error);
+          res.status(500).json({error: 'Error fetching data from database.'});
+      } else {
+          const updatedResults = results.map(result => {
+              const created_timestamp = moment(result.created_timestamp).tz('Asia/Bangkok').format('YYYY-MM-DD');
+              const updated_timestamp = moment(result.updated_timestamp).tz('Asia/Bangkok').format('YYYY-MM-DD');
+              return {...result, created_timestamp,updated_timestamp};
+          });
+          res.json(updatedResults);
+      }
+  });
+});
+
 
 //get status for Repair_Status test
 router.get ("/get/get/for/join1/:id" ,(req,res,next) => {
@@ -446,7 +519,7 @@ router.get ("/get/get/for/join1/:id" ,(req,res,next) => {
    
     console.log('555',req.params)
     const sql = `
-        SELECT r.id, e.employee_name, e.employee_email,d.device_id,d.device_serial, d.device_model, r.case_detail,r.priority, r.status,a.admin_name
+        SELECT r.id, e.employee_name, e.employee_email,d.device_id,d.device_serial, d.device_model, r.case_detail,r.priority, r.status,a.admin_name,r.created_timestamp,r.updated_timestamp
         FROM tbl_repair AS r 
         LEFT JOIN tbl_device AS d ON r.device_id = d.device_id
         LEFT JOIN tbl_owner AS o ON d.device_id = o.device_id
@@ -468,6 +541,36 @@ router.get ("/get/get/for/join1/:id" ,(req,res,next) => {
     });
     
 })
+
+//get activity for admib id
+router.get("/get/repair/by/admin/:admin_id", (req, res, next) => {
+  const admin_id = req.params.admin_id;
+
+  const sql = `
+    SELECT r.id, e.employee_name, e.employee_email, d.device_id, d.device_serial, d.device_model, r.case_detail, r.priority, r.status, a.admin_name
+    FROM tbl_repair AS r 
+    LEFT JOIN tbl_device AS d ON r.device_id = d.device_id
+    LEFT JOIN tbl_owner AS o ON d.device_id = o.device_id
+    LEFT JOIN tbl_employee AS e ON o.employee_id = e.employee_id
+    LEFT JOIN tbl_admin AS a ON r.admin_id = a.admin_id
+    WHERE r.admin_id = ?
+  `;
+
+  connect.query(sql, admin_id, (error, results, fields) => {
+    if (error) {
+      console.log(error);
+      res.status(500).json({ error: "Error fetching data from database." });
+    } else {
+      const updatedResults = results.map(result => {
+        const created_timestamp = moment(result.created_timestamp).tz('Asia/Bangkok').format('YYYY-MM-DD');
+        const updated_timestamp = moment(result.updated_timestamp).tz('Asia/Bangkok').format('YYYY-MM-DD');
+        return {...result, created_timestamp,updated_timestamp};
+    });
+    res.json(updatedResults);
+    }
+  });
+});
+
 
 //get for send email test
 // router.get ("/get/for/sendEmail/:id" ,(req,res,next) => {
@@ -495,6 +598,7 @@ router.get ("/get/get/for/join1/:id" ,(req,res,next) => {
 router.post("/sendEmail",(req,res,next) => {
 
     console.log(req.body);
+    const status = req.body.status;
     
     var transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -507,8 +611,13 @@ router.post("/sendEmail",(req,res,next) => {
       var mailOptions = {
         from: 'kh.hatari@gmail.co',
         to: req.body.employee_email,
-        subject: 'อุปกรณ์ซ่อมเสร็จแล้ว',
-        text: 'อุปกรณ์ซ่อมเสร็จแล้ว กรุณารับเครื่องคืน และกดยืนยันการรับเครื่อง'
+        subject: 'อัปเดตสถานะการซ่อมอุปกรณ์',
+        text: 'ขณะนี้อุปกรณ์ของคุณมีสถานะคือ ' +status+
+              '\n*หมายเหตุ'  +
+              '\nสถานะ กำลังซ่อม : อยู่ระหว่างกระบวนการซ่อม' + 
+              '\nสถานะ ซ่อมเสร็จแล้ว : อุปกรณ์ซ่อมเสร็จแล้ว สารมารถรับอุปกรณ์คืนได้' +
+              '\nสถานะ ส่งคืนเครื่องเรียบร้อย : สิ้นสุดกระบวนการส่งซ่อมอุปกรณ์' 
+                     
       };
       
       transporter.sendMail(mailOptions, function(error, info){
@@ -568,6 +677,8 @@ router.post("/sendEmailAdmin",(req,res,next) => {
 
 // })
 
+
+//login เข้ารหัส
 router.post('/admin/login', async (req, res) => {
 
   
@@ -594,6 +705,32 @@ router.post('/admin/login', async (req, res) => {
   
 
 })
+
+//login ไม่เข้ารหัส
+// router.post('/admin/login', async (req, res) => {
+
+//   const admin_email = req.body.admin_email;
+//   const admin_password = req.body.admin_password;
+
+  
+//     connect.query('SELECT * FROM tbl_admin WHERE admin_email = ? AND admin_password = ?', [admin_email, admin_password], (err, results) => {
+//       if (err) {
+//         res.send({ err: err })
+//       }
+//       if (results.length > 0) {
+//         Object.keys(results).forEach(function (key) {
+//           var row = results[key];
+//           res.send(row)
+//       })
+//       } else {
+//         res.status(500).send("Invalid Credentials");
+         
+//       }
+
+//     })
+  
+
+// })
 
 //change pass
 router.post("/changepassword", async (req, res) => {
@@ -762,19 +899,42 @@ router.delete("/deleteUser/:employee_id", (req, res) => {
 
   //--------------------------------------------------------------Devices---------------------------------------------------
 //get Devices
+// router.get("/tbl_device", async (req, res, next) => {
+//   try {
+//     connect.query("SELECT * FROM tbl_device WHERE device_status <> 'Not Available' ORDER BY device_id DESC", (err, rows) => {
+//       if (err) {
+//         res.send(err);
+//       } else {
+//         res.send(rows);
+//       }
+//     });
+//   } catch (e) {
+//     res.send(e);
+//   }
+// });
 router.get("/tbl_device", async (req, res, next) => {
-    try {
-      connect.query("SELECT * FROM tbl_device", (err, rows) => {
+  try {
+    connect.query("SELECT * FROM tbl_device WHERE device_status <> 'Not Available' ORDER BY device_id DESC",
+      (err, rows) => {
         if (err) {
-          res.send(err);
+          console.log(err);
+          res.status(500).json({ error: "Error fetching data from database." });
         } else {
-          res.send(rows);
+          const updatedResults = rows.map(result => {
+            const created_timestamp = moment(result.created_timestamp).tz('Asia/Bangkok').format('YYYY-MM-DD');
+            const updated_timestamp = moment(result.updated_timestamp).tz('Asia/Bangkok').format('YYYY-MM-DD');
+            return {...result, created_timestamp,updated_timestamp};
+          });
+          res.json(updatedResults);
         }
-      });
-    } catch (e) {
-      res.send(e);
-    }
-  });
+      }
+    );
+  } catch (e) {
+    res.status(500).json({ error: "Error fetching data from database." });
+  }
+});
+
+
 
   //get Devices
 router.get("/getCheck/:device_id", async (req, res, next) => {
@@ -805,7 +965,6 @@ router.post("/tbl_device2", (req, res, next) => {
     const device_warranty = req.body.device_warranty;
     const device_producer = req.body.device_producer;
     const device_cost = req.body.device_cost;
-    const device_image = req.body.device_image;
     const device_note = req.body.device_note;
     const device_status = req.body.device_status;
     const device_model = req.body.device_model;
@@ -815,6 +974,7 @@ router.post("/tbl_device2", (req, res, next) => {
     const device_month = req.body.device_month;
     const device_date = req.body.device_date;
     const device_id = req.body.device_id;
+    const device_type = req.body.device_type;
     const created_timestamp = req.body.created_timestamp;
     const updated_timestamp = req.body.updated_timestamp;
   
@@ -822,21 +982,18 @@ router.post("/tbl_device2", (req, res, next) => {
     // console.log(next);
     // res.send('hello')
     connect.query(
-      "INSERT INTO tbl_device (device_name,device_warranty,device_producer,device_cost,device_image,device_note,device_status,device_model,device_serial,device_asset_tag,device_year,device_month,device_date,created_timestamp,updated_timestamp) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,now(),now())",
+      "INSERT INTO tbl_device (device_name,device_warranty,device_producer,device_cost,device_note,device_status,device_model,device_serial,device_asset_tag,device_type,created_timestamp,updated_timestamp) VALUES(?,?,?,?,?,?,?,?,?,?,now(),now())",
       [
         device_name,
         device_warranty,
         device_producer,
         device_cost,
-        device_image,
         device_note,
         device_status,
         device_model,
         device_serial,
         device_asset_tag,
-        device_year,
-        device_month,
-        device_date,
+        device_type,
         created_timestamp,
         updated_timestamp,
       ],
@@ -856,7 +1013,6 @@ router.post("/tbl_device2", (req, res, next) => {
     const device_warranty = req.body.device_warranty;
     const device_producer = req.body.device_producer;
     const device_cost = req.body.device_cost;
-    const device_image = req.body.device_image;
     const device_note = req.body.device_note;
     const device_status = req.body.device_status;
     const device_model = req.body.device_model;
@@ -866,29 +1022,25 @@ router.post("/tbl_device2", (req, res, next) => {
     const device_month = req.body.device_month;
     const device_date = req.body.device_date;
     const device_id = req.params.device_id;
-    const created_timestamp = req.body.created_timestamp;
+    const device_type = req.body.device_type;
     const updated_timestamp = req.body.updated_timestamp;
   
     console.log("edit", req.body);
-    console.log('name',device_name);
+    console.log('name',device_note);
     connect.query(
-      "UPDATE device_asset.tbl_device SET device_name=?,device_warranty=?,device_producer=?,device_cost=?,device_image=?,device_note=?,device_status=?,device_model=?,device_serial=?,device_asset_tag=?,device_year=?,device_month=?,device_date=?,created_timestamp=now(),updated_timestamp=now() WHERE device_id = ?",
+      "UPDATE tbl_device SET device_name=?,device_warranty=?,device_producer=?,device_cost=?,device_note=?,device_status=?,device_model=?,device_serial=?,device_asset_tag=?,device_type=?,updated_timestamp=now() WHERE device_id = ?",
       [
         device_name,
         device_warranty,
         device_producer,
         device_cost,
-        device_image,
         device_note,
         device_status,
         device_model,
         device_serial,
         device_asset_tag,
-        device_year,
-        device_month,
-        device_date,
+        device_type,
         device_id,
-        created_timestamp,
         updated_timestamp,
        
       ],
@@ -927,26 +1079,52 @@ router.get("/getAsset/:device_id", (req, res, next) => {
   });
 
   //QR
-router.get("/getQR/:device_id", (req, res, next) => {
-    const device_id = req.params.device_id;
-    console.log("555", req.params);
+// router.get("/getQR/:device_id", (req, res, next) => {
+//     const device_id = req.params.device_id;
+//     console.log("555", req.params);
   
-    connect.query(
-      "SELECT * FROM tbl_device WHERE device_id = ? ",
-      device_id,
-      (err, rows) => {
-        if (err) {
-          res.send(err);
-        } else {
-          Object.keys(rows).forEach(function (key) {
-            var row = rows[key];
-            res.send(row);
-          });
-          // console.log(rows);
-        }
+//     connect.query(
+//       "SELECT * FROM tbl_device WHERE device_id = ? ",
+//       device_id,
+//       (err, rows) => {
+//         if (err) {
+//           res.send(err);
+//         } else {
+//           Object.keys(rows).forEach(function (key) {
+//             var row = rows[key];
+//             res.send(row);
+//           });
+//           // console.log(rows);
+//         }
+//       }
+//     );
+//   });
+
+router.get("/getQR/:device_id", (req, res, next) => {
+  const device_id = req.params.device_id;
+  console.log("555", req.params);
+
+  connect.query(
+    `SELECT td.device_id, td.device_asset_tag, td.device_name, td.device_model, td.device_serial, te.employee_name FROM tbl_device as td 
+    left join tbl_owner as tow on tow.device_id = td.device_id
+    left join tbl_employee as te on tow.employee_id = te.employee_id
+    WHERE td.device_id = ? `,
+    device_id,
+    (err, rows) => {
+      if (err) {
+        res.send(err);
+      } else {
+        Object.keys(rows).forEach(function (key) {
+          var row = rows[key];
+          console.log(row);
+          res.send(row);
+        });
+        // console.log(rows);
       }
-    );
-  });
+    }
+  );
+});
+
 
   //delete device
 router.delete("/delete/:device_id", (req, res) => {
@@ -987,79 +1165,161 @@ router.delete("/delete/:device_id", (req, res) => {
 
 
     //add owner
+// router.post("/update/ownner", async (req, res, next) => {
+//   const device_id = req.body.device_id;
+//   const employee_id = req.body.employee_id;
+//   const owner_note = req.body.owner_note;
+//   const device_status = req.body.device_status;
+
+//   console.log('555',req.body)
+
+//   connect.query('INSERT INTO tbl_owner (device_id,employee_id,owner_note,created_timestamp,updated_timestamp) VALUES(?,?,?,now(),now())',[device_id,employee_id,owner_note],
+//   (err,result) => {
+//     if (err){
+//         console.log(err);
+    
+//     }
+//     else{
+//         res.send("Values inserted");
+//     }
+// }
+// )
+// });
+
 router.post("/update/ownner", async (req, res, next) => {
   const device_id = req.body.device_id;
   const employee_id = req.body.employee_id;
   const owner_note = req.body.owner_note;
+  const device_status = req.body.device_status;
 
   console.log('555',req.body)
 
-  connect.query('INSERT INTO tbl_owner (device_id,employee_id,owner_note,created_timestamp,updated_timestamp) VALUES(?,?,?,now(),now())',[device_id,employee_id,owner_note],
-  (err,result) => {
-    if (err){
-        console.log(err);
-    
-    }
-    else{
-        res.send("Values inserted");
-    }
-}
-)
-});
+  
+
+    // query ข้อมูลลงในตาราง tbl_owner
+    connect.query('INSERT INTO tbl_owner (device_id, employee_id,owner_note,created_timestamp,updated_timestamp) VALUES (?, ?, ?,now(),now())', [device_id, employee_id,owner_note], (error, results) => {
+      if (error) {
+        connect.rollback(() => {
+          throw error;
+        });
+      }
+
+      console.log('Data inserted into tbl_owner table');
+
+      // query ข้อมูลเพื่อ update device_status ในตาราง tbl_device
+      connect.query('UPDATE tbl_device SET device_status = ? WHERE device_id = ?', [device_status, device_id], (error, results) => {
+        if (error) {
+          connect.rollback(() => {
+            throw error;
+          });
+        }
+        console.log('Data updated in tbl_device table');
+          console.log('Transaction completed.');
+          res.send('Data inserted into tbl_owner and updated in tbl_device');
+        });
+      });
+    });
+
+
 
 //get owner
-router.get ("/get/employee_name" ,(req,res,next) => {
-  const sql = `SELECT d.device_id, d.device_name, d.device_producer, d.device_status, e.employee_name, d.device_note, d.device_serial, d.device_model,o.owner_id
-  FROM tbl_device AS d
-  LEFT JOIN tbl_owner AS o ON o.device_id = d.device_id 
-  LEFT JOIN tbl_employee AS e ON o.employee_id = e.employee_id
-  ORDER BY o.owner_id DESC`;
-  
+router.get("/get/employee_name", (req, res, next) => {
+  const sql = `SELECT d.device_id, d.device_name, d.device_producer, d.device_status, e.employee_name, d.device_note, d.device_serial, d.device_model, o.owner_id
+               FROM tbl_device AS d
+               LEFT JOIN tbl_owner AS o ON o.device_id = d.device_id 
+               LEFT JOIN tbl_employee AS e ON o.employee_id = e.employee_id
+               WHERE d.device_status != 'Not Available'
+               ORDER BY d.device_id DESC`;
 
   connect.query(sql, (error, results, fields) => {
-      if (error) {
-          console.log(error);
-          res.status(500).json({error: 'Error fetching data from database.'});
-      } else {
-          res.json(results);
-      }
+    if (error) {
+      console.log(error);
+      res.status(500).json({ error: "Error fetching data from database." });
+    } else {
+      res.json(results);
+    }
   });
-})
+});
 
  //update Owner
- router.put("/updateOwner_id", (req, res, next) => {
-  const owner_id = req.body.owner_id;
-  const employee_id = null;
-  const note = null;
-  const created_timestamp = req.body.created_timestamp ;
-  const updated_timestamp = req.body.updated_timestamp ;
+//  router.put("/updateOwner_id", (req, res, next) => {
+//   const owner_id = req.body.owner_id;
+//   const device_status = req.body.device_status;
+//   const employee_id = null;
+//   const note = null;
+//   const created_timestamp = req.body.created_timestamp ;
+//   const updated_timestamp = req.body.updated_timestamp ;
   
 
-  console.log("help", owner_id);
+//   console.log("help", owner_id);
   
-  connect.query(
-    "UPDATE tbl_owner SET employee_id=?,owner_note=?,created_timestamp=now(),updated_timestamp=now() WHERE tbl_owner.owner_id = ?",
-    [
+//   connect.query(
+//     "UPDATE tbl_owner SET employee_id=?,owner_note=?,created_timestamp=now(),updated_timestamp=now() WHERE tbl_owner.owner_id = ?",
+//     [
       
-      employee_id,
-      note,
-      owner_id,
-      created_timestamp,
-      updated_timestamp,
+//       employee_id,
+//       note,
+//       owner_id,
+//       created_timestamp,
+//       updated_timestamp,
      
-    ],
+//     ],
+//     (err, result) => {
+//       if (err) {
+//         console.log(err);
+//       } else {
+//         res.send("Values updated");
+//         console.log("Values updated2");
+//       }
+//     }
+//   );
+  
+// });
+
+router.put("/updateOwner_id", (req, res, next) => {
+  const owner_id = req.body.owner_id;
+  const device_status = req.body.device_status; // เปลี่ยนตรงนี้
+  const device_id = req.body.device_id;
+  const employee_id = null;
+  const note = null;
+  const created_timestamp = req.body.created_timestamp;
+  const updated_timestamp = req.body.updated_timestamp;
+
+  console.log("help", owner_id);
+  console.log('device_status:', device_status); // ใส่ console.log เพื่อดูค่า device_status ที่ส่งมา
+
+  console.log('555',req.body)
+
+  // Update tbl_owner
+  connect.query(
+    "DELETE FROM tbl_owner  WHERE owner_id = ?",
+    [owner_id,],
     (err, result) => {
       if (err) {
         console.log(err);
+        return connect.rollback(() => {
+          res.status(500).send("Error updating owner");
+        });
       } else {
-        res.send("Values updated");
-        console.log("Values updated2");
+        res.json(result)
       }
     }
   );
-  
-});
 
+  // Update tbl_device
+  connect.query(
+    "UPDATE tbl_device SET device_status=?, updated_timestamp=now() WHERE device_id = ?",
+    [device_status,device_id,],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+
+      } else {
+        console.log("Device updated");
+      }
+    }
+  );
+});
 
 
 

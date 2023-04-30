@@ -149,9 +149,11 @@ const Sidebar = (props) => {
 
 
               <li className={pathname.includes("Activties") ? "active" : ""}>
-                <Link to="/Page/activity">
-                  <img src={bell} /> <span>Activties</span>
-                </Link>
+              {localStorage.getItem('Role') === 'admin' ? <Link to="/Page/activity">
+                  <img src={user} /> <span>Activity</span>
+                </Link> : <Link to="/Page/activitySupport">
+                  <img src={user} /> <span>Activity</span>
+                </Link>}
               </li>
 
               <li className="menu-title">

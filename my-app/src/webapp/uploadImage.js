@@ -15,7 +15,7 @@ function UploadImage() {
     const [imgs,setImgs] =useState()
 
     const location = useLocation()
-    const id = location.state 
+    const id = location.state
     //console.log('ID of user', location.state);
     const [isSucces, setSuccess] = useState(null);
     const [picture, setPicture] = useState({
@@ -82,25 +82,28 @@ function UploadImage() {
     const handleChnage=(e)=>{
         console.log(e.target.files)
 
-        const data = new FileReader()
+        const file = e.target.files[0];
+        resizeImage(file, 300, 300)
+          .then(data => {
+            setImgs(data);
+          })
+          .catch(error => {
+            console.error(error);
+          });
 
-        data.addEventListener('load',()=>{
-            setImgs(data.result)
-        })
+        // const data = new FileReader()
 
-        data.readAsDataURL(e.target.files[0])
+        // data.addEventListener('load',()=>{
+        //     setImgs(data.result)
+        // })
+
+        // data.readAsDataURL(e.target.files[0])
      
     }
    
     console.log(imgs)
     ;
 
-    
-       
-      
-    
-
-   
     const submit = async () => {
         
         const formdata = new FormData();
@@ -114,7 +117,7 @@ function UploadImage() {
 
         console.log('id',id);
 
-        // axios.post("http://localhost:5000/DB/tbl_list_repair2", blobUrl, image)
+        // axios.post("http://localhost:5000/DB/tbl_list_repair2", imgs, image)
         axios.post("/DB/tbl_list_repair2",{
             body:{
                 imgs,
@@ -193,6 +196,42 @@ function UploadImage() {
                 
     );
 }
+
+function resizeImage(file, maxWidth, maxHeight) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = event => {
+        const image = new Image();
+        image.src = event.target.result;
+        image.onload = () => {
+          let width = image.width;
+          let height = image.height;
+          if (width > maxWidth) {
+            height *= maxWidth / width;
+            width = maxWidth;
+          }
+          if (height > maxHeight) {
+            width *= maxHeight / height;
+            height = maxHeight;
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(image, 0, 0, width, height);
+          resolve(canvas.toDataURL(file.type));
+        };
+        image.onerror = error => {
+          reject(error);
+        };
+      };
+      reader.onerror = error => {
+        reject(error);
+      };
+    });
+  }
+  
 
 export default UploadImage;
 

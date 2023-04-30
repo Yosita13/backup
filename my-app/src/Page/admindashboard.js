@@ -40,7 +40,13 @@ const AdminDashboard = () => {
   
 
   const name = localStorage.getItem('name');
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
 
+  useEffect(() => {
+    setInterval(() => {
+      setCurrentDateTime(new Date());
+    }, 1000);
+  }, []);
 
   useEffect(() => {
     let firstload = localStorage.getItem("firstload")
@@ -533,6 +539,9 @@ const AdminDashboard = () => {
                 <h3 className="page-title">Welcome {name}</h3>
                 <ul className="breadcrumb">
                   <li className="breadcrumb-item active">Dashboard</li>
+                  <li className="breadcrumb-item active">Current Date Time: {currentDateTime.toLocaleString()}</li>
+                    
+                  
                 </ul>
               </div>
             </div>

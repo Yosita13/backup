@@ -93,21 +93,7 @@ const AllDevicesreport = () => {
     }
   }
 
-  const items = [
-    {
-      label: <a href="/app/profile/employee-profile">My Profile</a>,
-      key: '0',
-    },
-    {
-      label: <a href="/settings/companysetting">Settings</a>,
-      key: '1',
-    },
-    {
-      label: <a href="/login">Logout</a>,
-      key: '2',
-    },
-  ];
-
+  
 
   const prefixSelector = (
     <Form.Item name="prefix" noStyle>
@@ -147,14 +133,7 @@ const AllDevicesreport = () => {
 
 
 
-  // useEffect( ()=>{
-  //   if($('.select').length > 0) {
-  //     $('.select').select2({
-  //       minimumResultsForSearch: -1,
-  //       width: '100%'
-  //     });
-  //   }
-  // });  
+  
   const showModal = () => {
     setOpen(true);
   };
@@ -303,16 +282,7 @@ const AllDevicesreport = () => {
                   <Input />
                 </Form.Item>
 
-                {/* <Form.Item
-                  name="device_image"
-                  label="Image"
-                  rules={[{ required: true, message: 'Please input  Image' }]}
-                  onChange={(event) => {
-                    setdevice_image(event.target.value)
-                  }}
-                >
-                  <Input />
-                </Form.Item> */}
+           
 
                 <Form.Item
                   name="device_note"
@@ -389,40 +359,7 @@ const AllDevicesreport = () => {
               </div>
             </div>
           </div>
-          {/* /Page Header */}
-          {/* Search Filter */}
-          {/* <div className="row filter-row">
-            <div className="col-sm-6 col-md-3">
-              <div className="form-group form-focus">
-                <input type="text" className="form-control floating" />
-                <label className="focus-label">Employee ID</label>
-              </div>
-            </div>
-            <div className="col-sm-6 col-md-3">
-              <div className="form-group form-focus">
-                <input type="text" className="form-control floating" />
-                <label className="focus-label">Employee Name</label>
-              </div>
-            </div>
-            <div className="col-sm-6 col-md-3">
-              <div className="form-group form-focus select-focus">
-                <select className="select floating">
-                  <option>Select Designation</option>
-                  <option>Web Developer</option>
-                  <option>Web Designer</option>
-                  <option>Android Developer</option>
-                  <option>Ios Developer</option>
-                </select>
-                <label className="focus-label">Designation</label>
-              </div>
-            </div>
-            <div className="col-sm-6 col-md-3">
-              <a href="#" className="btn btn-success btn-block w-100"> Search </a>
-            </div>
-          </div> */}
-
-          
-          {/* Search Filter */}
+         
           <Form
             // {...layout}
 

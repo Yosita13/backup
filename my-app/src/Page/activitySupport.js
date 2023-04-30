@@ -7,14 +7,14 @@ import { MoreOutlined, EditOutlined, MailOutlined } from '@ant-design/icons';
 import Header from '../initialpage/Sidebar/header'
 import Sidebar from '../initialpage/Sidebar/sidebar'
 import { Form, Input, Select, Row, DatePicker, Dropdown, Button, Col, Modal, Space, Table, Tag } from 'antd';
-import { itemRender, onShowSizeChange } from "../Page/paginationfunction"
+import { itemRender, onShowSizeChange } from "./paginationfunction"
 import { useLocation } from 'react-router-dom';
 
 
 const { Option } = Select;
 
 
-const Activity = () => {
+const ActivityIT = () => {
 
 
   const [menu, setMenu] = useState(false);
@@ -40,24 +40,17 @@ const Activity = () => {
   const [success_count, setSuccess_count] = useState();
   const [progress_count, setProgress_count] = useState();
   const [complete_count, setComplete_count] = useState();
-
+  const [activityIT, setActivityIT] = useState();
   const [options, setOptions] = useState([]);
   const location = useLocation();
+  const adminId = localStorage.getItem('id')
 
-
-  //console.log('data is ', data)
-
-  //getAdmin 
-  // useEffect(() => {
-  //   fetch('/DB/tbl_admin')
-  //     .then(response => response.json())
-  //     .then(data => setOptions(data))
-  //     .catch(error => console.log(error));
-  // }, []);
+  
+ 
   
 
   useEffect(() => {
-    getforjoin()
+    ActivityIT()
     getAdmin()
   }, [])
 
@@ -71,18 +64,19 @@ const Activity = () => {
 
     }
   }
-  console.log('option',options);
+  
 
   useEffect(() => {
     form3.setFieldValue({ admin_email: activity_email })
   }, [activity_email])
 
-  const getforjoin = async () => {
+  const ActivityIT = async () => {
     try {
-      const { data } = await axios.get('/DB/get/get/for/join')
+      const { data } = await axios.get(`/DB/get/repair/by/admin/${adminId}`)
+
 
       //console.log('help',data.admin_name)
-      setData(data)
+      setActivityIT(data)
       setLengthRepair(data.length)
     } catch (error) {
 
@@ -97,7 +91,7 @@ const Activity = () => {
   //getCountStatus
   const getCountStatus = async () => {
     try {
-      const { data } = await axios.get('/DB/getCountStatus')
+      const { data } = await axios.get(`/DB/getCountStatusForIT/${adminId}`)
 
      
       setSuccess_count(data.success_count)
@@ -132,7 +126,7 @@ const Activity = () => {
 
   const onReset = () => {
     form.resetFields();
-    getforjoin();
+    ActivityIT();
   };
 
   //edit 16/04/2023
@@ -141,18 +135,17 @@ const Activity = () => {
     form.resetFields();
     console.log('Received values of form: ', values);
     try {
-      const { data } = await axios.put(`/DB/update/status/${editStatus}`,
+      const { data } = await axios.put(`/DB/update/statusForIT/${editStatus}`,
         {
           id: values.editStatus,
           status: values.Status,
           priority: values.Priority,
-          admin_id: values.Responsible,
+          // admin_id: values.Responsible,
 
         })
+        ActivityIT();
       console.log(values.Responsible)
-      //alert('success!!')
-      getActivity2()
-     
+  
 
     } catch (error) {
 
@@ -480,7 +473,7 @@ const Activity = () => {
               scrollToFirstError
             >
               {/* //edit 16/4/2023 */}
-              {/* <Form.Item
+              <Form.Item
                 name="Priority"
                 label="Priority"
                 rules={[{ required: true, message: 'Please select priority!' }]}
@@ -492,11 +485,11 @@ const Activity = () => {
                   <Option value="Hight">High</Option>
                   <Option value="Normal">Normal</Option>
                 </Select>
-              </Form.Item> */}
+              </Form.Item>
               {/* //edit 16/4/2023 */}
 
               {/* //edit 16/4/2023 */}
-              {/* <Form.Item
+              <Form.Item
                 name="Status"
                 label="Status"
                 rules={[{ required: true, message: 'Please select status!' }]}
@@ -509,10 +502,10 @@ const Activity = () => {
                   <Option value="ซ่อมเสร็จแล้ว">ซ่อมเสร็จแล้ว</Option>
                   <Option value="ส่งคืนเครื่องเรียบร้อย">ส่งคืนเครื่องเรียบร้อย</Option>
                 </Select>
-              </Form.Item> */}
+              </Form.Item>
               {/* //edit 16/4/2023 */}
 
-              <Form.Item
+              {/* <Form.Item
                 name="Responsible"
                 label="Responsible"
                 rules={[{ required: true, message: 'Please select Responsible!' }]}
@@ -520,10 +513,10 @@ const Activity = () => {
                   setStatus(event.target.value)
                 }}
               >
-                <Select placeholder="Please select Responsible">
+                <Select  placeholder="Please select Responsible">
                   {options.map(options => (<option key={options.admin_id} value={options.admin_id}>{options.admin_name}</option>))}
                 </Select>
-              </Form.Item>
+              </Form.Item> */}
 
               <Form.Item  {...tailFormItemLayout}>
                 <Row>
@@ -695,8 +688,6 @@ const Activity = () => {
             <li className="breadcrumb-item">ส่งคืนเครื่องเรียบร้อย : </li>
             <li className="breadcrumb"> {complete_count} รายการ</li>
           </ul>
-              
-
         </div>
 
         <div className={`main-wrapper ${menu ? 'slide-nav' : ''}`}>
@@ -714,14 +705,14 @@ const Activity = () => {
               <div className="table-responsive">
                 <Table className="table-striped"
                   pagination={{
-                    total: activity?.length,
+                    total: activityIT?.length,
                     showTotal: (total, range) => `Showing ${range[0]} to ${range[1]} of ${total} entries`,
                     showSizeChanger: true, onShowSizeChange: onShowSizeChange, itemRender: itemRender
                   }}
                   style={{ overflowX: 'auto' }}
                   columns={columns}
 
-                  dataSource={activity}
+                  dataSource={activityIT}
                   rowKey={record => record.id}
 
                 />
@@ -736,4 +727,4 @@ const Activity = () => {
   );
 }
 
-export default Activity;
+export default ActivityIT;

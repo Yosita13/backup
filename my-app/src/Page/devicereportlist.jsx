@@ -78,61 +78,11 @@ const Devicesreportlist = ({ device }) => {
     } catch (error) {}
   };
 
-  // const toggleMobileMenu = () => {
-  //   setMenu(!menu)
-  // }
-
-  // const formItemLayout = {
-  //   labelCol: {
-  //     xs: { span: 24 },
-  //     sm: { span: 8 },
-  //   },
-  //   wrapperCol: {
-  //     xs: { span: 24 },
-  //     sm: { span: 16 },
-  //   },
-  // };
-  // const tailFormItemLayout = {
-  //   wrapperCol: {
-  //     xs: {
-  //       span: 24,
-  //       offset: 0,
-  //     },
-  //     sm: {
-  //       span: 16,
-  //       offset: 8,
-  //     },
-  //   },
-  // };
 
   const toggleMobileMenu = () => {
     setMenu(!menu);
   };
 
-  // useEffect( ()=>{
-  //   if($('.select').length > 0) {
-  //     $('.select').select2({
-  //       minimumResultsForSearch: -1,
-  //       width: '100%'
-  //     });
-  //   }
-  // });
-
-  //-- get data from DB---
-  // useEffect(() => {
-  //   getAdmin()
-  // }, [])
-
-  // const getAdmin = async () => {
-  //   try {
-  //     const { data } = await axios.get('/DB/tbl_admin')
-  //     // console.log(data.length)
-  //     setAdmin(data)
-  //     console.log(data);
-  //   } catch (error) {
-
-  //   }
-  // }
 
   const deleDevices = (values) => {
     //console.log(admin_id);
@@ -322,15 +272,12 @@ const Devicesreportlist = ({ device }) => {
       sorter: (a, b) => a.device_asset_tag.length - b.device_asset_tag.length,
     },
     {
-      title: "Month",
-      dataIndex: "device_month",
-      sorter: (a, b) => a.device_month.length - b.device_month.length,
+      title: "Date",
+      dataIndex: "created_timestamp",
+      sorter: (a, b) => a.created_timestamp.length - b.created_timestamp.length,
+      
     },
-    {
-      title: "Year",
-      dataIndex: "device_year",
-      sorter: (a, b) => a.device_year.length - b.device_year.length,
-    },
+    
   ];
 
   //console.log(Admin);

@@ -80,7 +80,6 @@ import AllDevicesreport from "./Page/alldevice_report";
 import AllUsers from "./Page/allusers";
 //import Navbar from "./Page/Navbar";
 import Employeeslist from "./Page/employeeslist";
-import Deviceslist from "./Page/devicelist";
 import Devicesreportlist from "./Page/devicereportlist";
 import Userslist from "./Page/userlist";
 import Userhome from "./webapp/usrehome";
@@ -92,6 +91,7 @@ import DataDevice from "./webapp/DataDevice";
 //import Tests3 from './webapp/tests3';
 import Employee from "./Page/employee";
 import Device from "./Page/device";
+import Deviceslist from "./Page/devicelist";
 import Devicereport from "./Page/devicereport";
 import User from "./Page/user";
 import UploadImage from "./webapp/uploadImage";
@@ -112,6 +112,8 @@ import License from "./Page/license";
 import Loginpage from "./Page/login";
  import Itsupport from './Page/itsupport'
  import Checkin from './Page/Checkin'
+ import ActivitySupport from './Page/activitySupport'
+
 
 const App = () => {
     return (
@@ -134,7 +136,7 @@ const App = () => {
                {/* <Route path="/Page/allcategory" render={(props) => <Allcategorys />} ></Route> */}
                 <Route path="/Page/itsupport" render={(props) => <Itsupport />} ></Route>
                 {/* <Route path="/Page/alldevice" render={(props) => <AllDevices />} ></Route> */}
-                {/* <Route path="/Page/navbar" render={(props) => <Navbar />}></Route> */}
+                <Route path="/Page/activitysupport" render={(props) => <ActivitySupport />}></Route>
                 <Route path="/Page/employeeslist" render={(props) => <Employeeslist />}></Route>
                 <Route path="/Page/employee" render={(props) => <Employee />}></Route>
                 <Route path="/Page/devicelist" render={(props) => <Deviceslist />}></Route>

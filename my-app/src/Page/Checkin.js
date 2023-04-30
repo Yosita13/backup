@@ -12,6 +12,7 @@ import { useHistory } from "react-router-dom";
 
 
 
+
 const { Option } = Select;
 
 
@@ -41,6 +42,8 @@ const Checkin = () => {
     const [initialValues, setInitialValues] = useState();
     const [forComfirmDelete, setForComfirmDelete] = useState();
     const [tbl_own, setTbl_own] = useState();
+    const [device_status, setdevice_status] = useState("");
+
 
     const [Device, setDevice] = useState();
     const [text, setText] = useState("");
@@ -48,132 +51,7 @@ const Checkin = () => {
     let history = useHistory();
     const id = location.state;
 
-    console.log("ID", location.state);
-
-    const showModalEdit = () => {
-        setOpenEdit(true);
-    };
-
-    const hideModalEdit = () => {
-        setOpenEdit(false);
-    };
-
-    const showModalCheck = (values) => {
-
-        form.setFieldsValue({ device_id: values })
-        setOpenChek(true);
-    };
-
-    const hideModalCheck = () => {
-        formCheck.resetFields()
-        setOpenChek(false);
-    };
-
-    const showModalCheckOut = (values) => {
-
-        form.setFieldsValue({ device_id: values })
-        setOpenChekOut(true);
-    };
-
-    const hideModalCheckOut = () => {
-        formCheck.resetFields()
-        setOpenChekOut(false);
-    };
-
-
-    useEffect(() => {
-        getDevice();
-    }, []);
-
-    const getDevice = async () => {
-        try {
-            const { data } = await axios.get("/DB/tbl_device");
-            console.log(data.device_id)
-            setDevice(data);
-
-        } catch (error) { }
-    };
-
-    useEffect(() => {
-        getOwner();
-    }, []);
-
-    const getOwner = async () => {
-        try {
-            const { data } = await axios.get("/DB/get/employee_name");
-            // console.log(data.length)
-            setOwner(data);
-        } catch (error) { }
-    };
-
-
-
-    const hideModal = () => {
-        setOpen(false);
-        setOpen2(false);
-    };
-
-
-    //save
-
-    const onFinish = async (values) => {
-        formCheck.resetFields()
-        setOpenEdit(false);
-        console.log(values);
-        console.log(form.getFieldValue('device_id'));
-
-        const device_id = form.getFieldValue('device_id');
-        form.resetFields();
-        console.log("Received values of form: ", values);
-        try {
-            const { data } = await axios.post(
-                `/DB/update/ownner`,
-                {
-                    device_id: values.device_id,
-                    employee_id: values.employee_id,
-                    owner_note: values.owner_note,
-
-                }
-            );
-            hideModalCheck()
-            getOwner()
-        } catch (error) { }
-    };
-
-    const onFinishCheckOut = async (values) => {
-        formCheck.resetFields()
-
-        console.log(owner_Id);
-        console.log(form.getFieldValue('device_id'));
-        const employee_id = null;
-        const note = null;
-
-        const device_id = form.getFieldValue('device_id');
-        form.resetFields();
-        console.log("Received values of form: ", values.owner_id);
-        try {
-            const { data } = await axios.put(
-                `/DB/updateOwner_id`,
-                {
-
-                    device_id: owner_Id.device_id,
-                    owner_id: owner_Id.owner_id
-
-                }
-            );
-            hideModalCheckOut()
-            getOwner()
-        } catch (error) { }
-    };
-
-
-
-    const toggleMobileMenu = () => {
-        setMenu(!menu);
-    };
-
-
-
+    
     const formItemLayout = {
         labelCol: {
             xs: { span: 24 },
@@ -200,6 +78,128 @@ const Checkin = () => {
 
 
 
+    console.log("ID", location.state);
+
+    const showModalEdit = () => {
+        setOpenEdit(true);
+    };
+
+    const hideModalEdit = () => {
+        setOpenEdit(false);
+    };
+
+    const showModalCheck = (values) => {
+
+        form.setFieldsValue({ device_id: values })
+        setOpenChek(true);
+    };
+
+    const hideModalCheck = () => {
+        formCheck.resetFields()
+        setOpenChek(false);
+    };
+
+    const showModalCheckOut = (values) => {
+
+        form3.setFieldsValue({ device_id: values.device_id })
+        setOpenChekOut(true);
+    };
+
+    const hideModalCheckOut = () => {
+        form3.resetFields()
+        setOpenChekOut(false);
+    };
+
+
+    useEffect(() => {
+        getDevice();
+    }, []);
+
+    const getDevice = async () => {
+        try {
+            const { data } = await axios.get("/DB/tbl_device");
+            console.log(data.device_id)
+            setDevice(data);
+
+        } catch (error) { }
+    };
+
+    useEffect(() => {
+        getOwner();
+    }, []);
+
+    const getOwner = async () => {
+        try {
+            const { data } = await axios.get("/DB/get/employee_name");
+             console.log(data)
+            setOwner(data);
+        } catch (error) { }
+    };
+
+    const hideModal = () => {
+        setOpen(false);
+        setOpen2(false);
+    };
+
+    //save
+
+    const onFinish = async (values) => {
+        formCheck.resetFields()
+        setOpenEdit(false);
+        console.log(values);
+        console.log(form.getFieldValue('device_id'));
+
+        const device_id = form.getFieldValue('device_id');
+        form.resetFields();
+        console.log("Received values of form: ", values);
+        try {
+            const { data } = await axios.post(
+                `/DB/update/ownner`,
+                {
+                    device_id: values.device_id,
+                    employee_id: values.employee_id,
+                    device_status : values.device_status,
+                    owner_note: values.owner_note,
+
+                }
+            );
+            hideModalCheck()
+            getOwner()
+        } catch (error) { }
+    };
+
+    const onFinishCheckOut = async (values) => {
+        formCheck.resetFields()
+        setOpenChekOut(false);
+        console.log(owner_Id);
+        console.log(form.getFieldValue('device_id'));
+        form3.resetFields();
+        console.log("Received values of form: ", device_status);
+        try {
+            const { data } = await axios.put(
+                `/DB/updateOwner_id`,
+                {
+                    device_id: owner_Id.device_id,
+                    owner_id: owner_Id.owner_id,
+                    device_status : device_status,
+                }
+            );
+        
+            hideModalCheckOut()
+            getOwner()
+                  
+        } catch (error) { }
+    };
+
+
+
+    const toggleMobileMenu = () => {
+        setMenu(!menu);
+    };
+
+
+
+
     const getID = (values) => {
         console.log("value", values);
         setId_device(values.device_id);
@@ -210,17 +210,17 @@ const Checkin = () => {
     };
 
 
-    const getChekOut = async (values) => {
+    const getChekOut =  (values) => {
         console.log("value", values);
         setId_device(values.device_id);
         setOwner_Id(values)
-        console.log('id', owner_Id);
+        console.log('id',values.device_id);
         form3.setFieldsValue({ device_id: values.device_id, employee_id: values.employee_id })
         showModalCheckOut(values)
 
     };
 
-   
+
 
     const columns = [
         {
@@ -252,11 +252,9 @@ const Checkin = () => {
                 <div>
                     <span
                         className={
-                            text === "Sold out"
-                                ? "badge bg-inverse-warning"
-                                : text === "Not used"
-                                    ? "badge bg-inverse-success"
-                                    : "badge bg-inverse-blue"
+                            text === "In use" ? "badge bg-inverse-danger"
+                            : text === "Available"? "badge bg-inverse-success"
+                                    : "badge bg-inverse-warning"
                         }
                     >
                         {text}
@@ -297,7 +295,15 @@ const Checkin = () => {
                     <Button
                         type="primary"
                         success
-                        onClick={() => getID(text)}
+                        onClick={() => {
+                            if (record.device_status === "In use") {
+                                alert("Please check out before checking in.");
+                            } else if (record.device_status === "Not Available") {
+                                alert("Cannot check in because the device is not available.");
+                            } else {
+                                getID(text);
+                            }
+                        }}
                         data-bs-toggle="modal"
                         data-bs-target="#add_device"
                     >
@@ -310,14 +316,20 @@ const Checkin = () => {
         },
         {
             title: "Action",
-            render: (data, record) => (
+            render: (text, record) => (
                 <div className="dropdown profile-action">
 
 
                     <Button
                         type="primary"
                         danger
-                        onClick={() => getChekOut(data)}
+                        onClick={() => {
+                            if (record.device_status === "Available") {
+                                alert("Please check out before checking in.");
+                            } else {
+                                getChekOut(text);
+                            }
+                        }}
                         data-bs-toggle="modal"
                         data-bs-target="#add_device"
                     >
@@ -343,7 +355,7 @@ const Checkin = () => {
             <Sidebar />
             <div className="page-wrapper">
                 <Helmet>
-                    <title>Activity</title>
+                    <title>CheckIn.CheckOut</title>
                     <meta name="description" content="Login page" />
                 </Helmet>
                 {/* Page Content */}
@@ -362,7 +374,7 @@ const Checkin = () => {
                             </div>
                         </div>
                     </div>
-                   
+
                     <div className={`main-wrapper ${menu ? "slide-nav" : ""}`}>
                         <Header onMenuClick={(value) => toggleMobileMenu()} />
                         <Sidebar />
@@ -420,7 +432,22 @@ const Checkin = () => {
                                     rules={[{ required: true, message: 'Please input your ID!' }]}
 
                                 >
-                                    <Input value={id_device} placeholder="headproject" />
+                                    <Input />
+                                </Form.Item>
+
+                                <Form.Item
+                                    name="device_status"
+                                    label="Status"
+                                    rules={[{ required: true, message: "Please select status!" }]}
+                                    onChange={(event) => {
+                                        setdevice_status(event.target.value);
+                                    }}
+                                >
+                                    <Select placeholder="select status device">
+                                        <Option value="Available">Available</Option>
+                                        <Option value="Not Available">Not Available</Option>
+                                        <Option value="In use">In use</Option>
+                                    </Select>
                                 </Form.Item>
 
 
@@ -499,6 +526,19 @@ const Checkin = () => {
 
                                 >
                                     <Input />
+                                </Form.Item>
+
+                                <Form.Item
+                                    name="device_status"
+                                    label="Status"
+                                    rules={[{ required: true, message: "Please select status!" }]}
+                                   
+                                >
+                                    <Select placeholder="select status device"  onChange={setdevice_status }>
+                                        <Option value="Available">Available</Option>
+                                        <Option value="Not Available">Not Available</Option>
+                                        {/* <Option value="In use">In use</Option> */}
+                                    </Select>
                                 </Form.Item>
 
                                 <Form.Item {...tailFormItemLayout}>
