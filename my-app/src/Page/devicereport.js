@@ -11,6 +11,7 @@ import Devicesreportlist from "../Page/devicereportlist";
 import { useLocation } from "react-router-dom";
 import dayjs, { Dayjs } from "dayjs";
 
+
 const { Option } = Select;
 
 const AllDevicesreport = () => {
@@ -20,6 +21,8 @@ const AllDevicesreport = () => {
   const [Device, setDevice] = useState([]);
   const [form] = Form.useForm();
   const [form2] = Form.useForm();
+  const [startDate,setStartDate] = useState();
+  const [endDate,setEndDate] = useState();
   const [value, setValue] = React.useState(dayjs());
 
   const { RangePicker } = DatePicker;
@@ -52,6 +55,8 @@ const range = (start, end) => {
     { label: "device_serial", key: "device_serial" },
     { label: "device_asset_tag", key: "device_asset_tag" },
   ];
+
+ 
   
  
   // const onFinish2 = (value) => {
@@ -82,6 +87,21 @@ const range = (start, end) => {
   //     console.log("1", emp1);
   //   }
   // };
+  const getdate = async () => {
+    console.log('555');
+
+    try {
+     
+      const { data } = await axios.post("/DB/startdate",{ 
+
+          startDate: startDate,
+          endDate: endDate,
+
+    })
+    setDevice(data)
+    } catch (error) {}
+  };
+
   const onFinish2 = (value) => {
     console.log("filter", value);
     console.log("device", Device);
@@ -167,46 +187,33 @@ const range = (start, end) => {
             </div>
           </div>
 
-    <Form>
+    {/* <Form>
+      <Form.Item>
           < Space direction="vertical" size={50} >
                   <RangePicker style={{width:'100%'}}/></Space>
+                  </Form.Item>
+                  </Form> */}
 
-                  </Form>
+         
 
-          {/* <CSVLink
-                  data={Device}
-                  headers={headers}
-                  filename="Devices Report.csv"
-                >
-                  <Button
-                    htmlType="button"
-                    className="btn btn-danger btn-block w-20 "
-                    style={{ marginLeft: "5px" }}
-                    //onClick={onReset}
-                  >
-                    Export
-                  </Button> */}
-          {/* <button onClick={handleExport}>Export CSV</button> */}
-          {/* </CSVLink> */}
-          {/* <input
-            className="form-control floating"
-            placeholder="Search"
-            value={filterVal}
-            onInput={(e) => handleFilter(e)}
-          /> */}
-
-          {/* <Form
+          <Form
             form={form2}
             name="control-hooks"
-            onFinish={onFinish2}
+            onFinish={getdate}
           >
             <div className="row filter-row">
               <Form.Item name="date">
-                < Space direction="vertical" size={12}>
-                  <RangePicker className="form-control floating" placeholder="Search by date" /></Space>
-                <DatePicker className="form-control floating" placeholder="Search by date" />
+              <RangePicker style={{width:'100%'}}
+               onChange={(dates, dateStrings) => {
+                 setStartDate(dateStrings[0]);
+                 setEndDate(dateStrings[1]);
+               }}/>
               </Form.Item>
+
+             
             </div>
+
+
             <Form.Item>
               <div className="col-sm-6 col-md-4" style={{ textAlign: "left" }}>
                 <Button
@@ -226,7 +233,7 @@ const range = (start, end) => {
                 </Button>
               </div>
             </Form.Item>
-          </Form> */}
+          </Form>
 
 
           {/* </div> */}

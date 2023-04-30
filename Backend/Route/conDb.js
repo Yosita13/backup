@@ -934,6 +934,35 @@ router.get("/tbl_device", async (req, res, next) => {
   }
 });
 
+//get start date end date
+router.post("/startdate", async (req, res, next) => {
+  const startDate = req.body.startDate;
+  const endDate = req.body.endDate;
+  
+  console.log(req.body);
+  try {
+    connect.query("SELECT * FROM tbl_device WHERE created_timestamp BETWEEN ? AND ? ORDER BY device_id DESC",
+      [startDate, endDate],
+      (err, rows) => {
+        if (err) {
+          console.log(err);
+          res.status(500).json({ error: "Error fetching data from database." });
+        } else {
+          const updatedResults = rows.map(result => {
+            const created_timestamp = moment(result.created_timestamp).tz('Asia/Bangkok').format('YYYY-MM-DD');
+            const updated_timestamp = moment(result.updated_timestamp).tz('Asia/Bangkok').format('YYYY-MM-DD');
+            return {...result, created_timestamp,updated_timestamp};
+          });
+          res.json(updatedResults);
+        }
+      }
+    );
+  } catch (e) {
+    res.status(500).json({ error: "Error fetching data from database." });
+  }
+});
+
+
 
 
   //get Devices
