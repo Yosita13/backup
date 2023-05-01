@@ -202,7 +202,7 @@ router.post('/tbl_list_repair2', async (req, res) => {
        
             const sql = "INSERT INTO tbl_repair (image,device_id) VALUES(?,?)"
             connect.query(sql, [image,id], (err, results) => {  if (err) throw err;
-              res.setHeader('Access-Control-Allow-Origin', 'https://beautiful-blini-a9b6bb.netlify.app');
+              res.setHeader('Access-Control-Allow-Origin', '*');
 			     
                 res.send(results)   
 			}); 
@@ -771,7 +771,7 @@ router.post("/changepassword", async (req, res) => {
 //get employee
 router.get("/tbl_employee", async (req, res, next) => {
     try {
-      connect.query("SELECT * FROM tbl_employee", (err, rows) => {
+      connect.query("SELECT * FROM tbl_employee ORDER BY employee_id DESC", (err, rows) => {
         if (err) {
           res.send(err);
         } else {
@@ -1108,26 +1108,6 @@ router.get("/getAsset/:device_id", (req, res, next) => {
   });
 
   //QR
-// router.get("/getQR/:device_id", (req, res, next) => {
-//     const device_id = req.params.device_id;
-//     console.log("555", req.params);
-  
-//     connect.query(
-//       "SELECT * FROM tbl_device WHERE device_id = ? ",
-//       device_id,
-//       (err, rows) => {
-//         if (err) {
-//           res.send(err);
-//         } else {
-//           Object.keys(rows).forEach(function (key) {
-//             var row = rows[key];
-//             res.send(row);
-//           });
-//           // console.log(rows);
-//         }
-//       }
-//     );
-//   });
 
 router.get("/getQR/:device_id", (req, res, next) => {
   const device_id = req.params.device_id;
@@ -1194,27 +1174,6 @@ router.delete("/delete/:device_id", (req, res) => {
 
 
     //add owner
-// router.post("/update/ownner", async (req, res, next) => {
-//   const device_id = req.body.device_id;
-//   const employee_id = req.body.employee_id;
-//   const owner_note = req.body.owner_note;
-//   const device_status = req.body.device_status;
-
-//   console.log('555',req.body)
-
-//   connect.query('INSERT INTO tbl_owner (device_id,employee_id,owner_note,created_timestamp,updated_timestamp) VALUES(?,?,?,now(),now())',[device_id,employee_id,owner_note],
-//   (err,result) => {
-//     if (err){
-//         console.log(err);
-    
-//     }
-//     else{
-//         res.send("Values inserted");
-//     }
-// }
-// )
-// });
-
 router.post("/update/ownner", async (req, res, next) => {
   const device_id = req.body.device_id;
   const employee_id = req.body.employee_id;
@@ -1270,41 +1229,7 @@ router.get("/get/employee_name", (req, res, next) => {
   });
 });
 
- //update Owner
-//  router.put("/updateOwner_id", (req, res, next) => {
-//   const owner_id = req.body.owner_id;
-//   const device_status = req.body.device_status;
-//   const employee_id = null;
-//   const note = null;
-//   const created_timestamp = req.body.created_timestamp ;
-//   const updated_timestamp = req.body.updated_timestamp ;
-  
-
-//   console.log("help", owner_id);
-  
-//   connect.query(
-//     "UPDATE tbl_owner SET employee_id=?,owner_note=?,created_timestamp=now(),updated_timestamp=now() WHERE tbl_owner.owner_id = ?",
-//     [
-      
-//       employee_id,
-//       note,
-//       owner_id,
-//       created_timestamp,
-//       updated_timestamp,
-     
-//     ],
-//     (err, result) => {
-//       if (err) {
-//         console.log(err);
-//       } else {
-//         res.send("Values updated");
-//         console.log("Values updated2");
-//       }
-//     }
-//   );
-  
-// });
-
+ 
 router.put("/updateOwner_id", (req, res, next) => {
   const owner_id = req.body.owner_id;
   const device_status = req.body.device_status; // เปลี่ยนตรงนี้

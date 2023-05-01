@@ -5,7 +5,7 @@ import { axiosCMMS as axios } from '../config/axios';
 //import  axios from  'axios';
 import Header from '../initialpage/Sidebar/header'
 import Sidebar from '../initialpage/Sidebar/sidebar'
-import { Form, Input, Select, Row, DatePicker, Dropdown, Button, Col, Modal, Space, Table, Tag } from 'antd';
+import { Form, Input, Select, Row, DatePicker, Dropdown, Button, Col, Modal, Space, Table, Tag,notification,Alert } from 'antd';
 import { itemRender, onShowSizeChange } from "../Page/paginationfunction"
 import { useLocation } from 'react-router-dom';
 import { useHistory } from "react-router-dom";
@@ -297,9 +297,18 @@ const Checkin = () => {
                         success
                         onClick={() => {
                             if (record.device_status === "In use") {
-                                alert("Please check out before checking in.");
+                                notification.warning({
+                                    message: 'ไม่สามารถ ChekIn ได้',
+                                    description:
+                                      'กรุณา CheckOut อุปกรณ์ก่อนทำการ check in',
+                                  })
                             } else if (record.device_status === "Not Available") {
-                                alert("Cannot check in because the device is not available.");
+                                notification.warning({
+                                    message: 'ไม่สามารถ ChekIn ได้',
+                                    description:
+                                      'ไม่สารถ ChekIn ได้ เนื่องจากอุปกรณ์ไม่พร้อมใช้งาน',
+                                  })
+                               
                             } else {
                                 getID(text);
                             }
@@ -325,7 +334,11 @@ const Checkin = () => {
                         danger
                         onClick={() => {
                             if (record.device_status === "Available") {
-                                alert("Please check out before checking in.");
+                                notification.warning({
+                                    message: 'ไม่สามารถ CheckOut ได้',
+                                    description:
+                                      'กรุณา CheckIn อุปกรณ์ก่อนทำการ CheckOut อุปกรณ์',
+                                  })
                             } else {
                                 getChekOut(text);
                             }

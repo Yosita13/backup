@@ -44,14 +44,28 @@ const AllUser = () => {
 
 
   //console.log('employeeID', EmployeeID);
+
+  useEffect(() => {
+    getEmployee()
+  }, [])
+
+  const getEmployee = async () => {
+    try {
+      const { data } = await axios.get('/DB/tbl_employee')
+      // console.log(data.length)
+      setEmployee(data)
+    } catch (error) {
+
+    }
+  }
   
 
   const getUsers = (values) => {
-    debugger
+    
     //console.log(values);
     axios.get(`/DB/getUser/${values.employee_id}`).then((response) => {
       //console.log('123',response.data.admin_name);
-      debugger
+     
       setDataUser(response.data);
       const defaultValue = {
 
@@ -89,12 +103,10 @@ const AllUser = () => {
         employee_address: values.Address
 
       })
-      getUsers();
+      getEmployee();
       console.log(data);
       handleOk();
-      alert('success!!')
-     
-
+ 
     } catch (e) {
 
     }
@@ -134,7 +146,6 @@ const AllUser = () => {
 
   }
 
-
   const onReset = () => {
     form2.resetFields();
     getEmployee();
@@ -142,22 +153,7 @@ const AllUser = () => {
   };
 
 
-
-
-
-  useEffect(() => {
-    getEmployee()
-  }, [])
-
-  const getEmployee = async () => {
-    try {
-      const { data } = await axios.get('/DB/tbl_employee')
-      // console.log(data.length)
-      setEmployee(data)
-    } catch (error) {
-
-    }
-  }
+ 
   //console.log(Admin)
 
   //-----------------send email after register------------------------
@@ -430,7 +426,7 @@ const AllUser = () => {
 
 
         {/* /employee */}
-        <Userlist User={Employee}  />
+        <Userlist User={Employee} getEmployee={getEmployee} />
 
 
 

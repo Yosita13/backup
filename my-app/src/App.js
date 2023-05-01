@@ -113,6 +113,7 @@ import Loginpage from "./Page/login";
  import Itsupport from './Page/itsupport'
  import Checkin from './Page/Checkin'
  import ActivitySupport from './Page/activitySupport'
+ import Assetreport from "./Page/assetreport";
 
 
 const App = () => {
@@ -155,6 +156,7 @@ const App = () => {
                 <Route path="/Page/test" render={(props) => <Test />}></Route>
                 <Route path="/Page/activity" render={(props) => <Activity />}></Route>
                 <Route path="/Page/activityreport" render={(props) => <Activityreport />}  ></Route>
+                <Route path="/Page/assetreport" render={(props) => <Assetreport />}></Route>
                 <Route path="/webapp/userhome" render={(props) => <Userhome />}></Route>
                 <Route path="/webapp/QR" render={(props) => <QR />}></Route>
                 <Route path="/webapp/TakePhoto" render={(props) => <TakePhoto />}></Route>

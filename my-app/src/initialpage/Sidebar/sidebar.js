@@ -203,7 +203,7 @@ const Sidebar = (props) => {
               </li>
 
               <li className={pathname.includes("deviceerport") ? "active" : ""}>
-                <Link to="/Page/devicereport">
+                <Link to="/Page/assetreport">
                   <img src={device} /> <span>Devices Report</span>
                 </Link>
               </li>

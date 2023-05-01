@@ -340,8 +340,8 @@ const AdminDashboard = () => {
       render: (text, record) =>
         <div>
           <span className={
-            text === "In progress" ? "badge bg-inverse-warning" :
-              text === "Complete" ? "badge bg-inverse-success" :
+            text === "กำลังซ่อม" ? "badge bg-inverse-warning" :
+              text === "ส่งคืนเครื่องเรียบร้อย" ? "badge bg-inverse-success" :
                 "badge bg-inverse-blue"
           }>{text}</span>
         </div>
@@ -424,12 +424,10 @@ const AdminDashboard = () => {
         <div>
           <span
             className={
-              text === "Sold out"
-                ? "badge bg-inverse-warning"
-                : text === "Not used"
-                ? "badge bg-inverse-success"
-                : "badge bg-inverse-blue"
-            }
+              text === "In use" ? "badge bg-inverse-danger"
+              : text === "Available"? "badge bg-inverse-success"
+                      : "badge bg-inverse-warning"
+          }
           >
             {text}
           </span>

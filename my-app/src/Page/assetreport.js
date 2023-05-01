@@ -9,6 +9,7 @@ import Sidebar from "../initialpage/Sidebar/sidebar";
 import { useReactToPrint } from "react-to-print";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+
 //import "../path/to/thai/font.css";
 import {
   Form,
@@ -29,7 +30,7 @@ import { useLocation } from "react-router-dom";
 
 const { Option } = Select;
 
-const Activityreport = () => {
+const Assetreport = () => {
   const [menu, setMenu] = useState(false);
   const [open, setOpen] = useState(false);
   const [Admin, setAdmin] = useState([]);
@@ -51,67 +52,100 @@ const Activityreport = () => {
   const [options, setOptions] = useState([]);
   const location = useLocation();
   const conponentPDF = useRef();
+  //const [menu, setMenu] = useState(false);
+  //const [open, setOpen] = useState(false);
+  // const [Admin, setAdmin] = useState([])
+  const [Edit, setEdit] = useState([]);
+  //const [form] = Form.useForm();
+  const [device_id, setdevice_id] = useState("");
+  const [device_name, setdevice_name] = useState("");
+  const [device_warranty, setdevice_warranty] = useState("");
+  const [device_producer, setdevice_producer] = useState("");
+  const [device_cost, setdevice_cost] = useState("");
+  const [device_image, setdevice_image] = useState("");
+  const [device_model, setdevice_model] = useState("");
+  const [device_serial, setdevice_serial] = useState("");
+  const [device_asset_tag, setdevice_asset_tag] = useState("");
+  const [created_timestamp, setCreated_timestamp] = useState("");
+  const [updated_timestamp, setUpdated_timestamp] = useState("");
+  const [device_note, setdevice_note] = useState("");
+  const [device_status, setdevice_status] = useState("");
+  const [datadevice, setDatadevice] = useState();
+  //const [initialValues, setInitialValues] = useState();
+  const [newPassword, setNewPassword] = useState();
+  const [Device, setDevice] = useState([]);
 
-  //console.log('data is ', data)
+  //-----
 
-  //getAdmin
-  useEffect(() => {
-    fetch("/DB/tbl_admin")
-      .then((response) => response.json())
-      .then((data) => setOptions(data))
-      .catch((error) => console.log(error));
-  }, []);
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
+  //const [value, setValue] = React.useState(dayjs());
+  const [generated, setGenerated] = useState(false);
+  const { RangePicker } = DatePicker;
 
-  useEffect(() => {
-    getforjoin();
-  }, []);
+  const [device_spare, setdevice_spare] = useState("");
 
-  useEffect(() => {
-    form3.setFieldValue({ admin_email: activity_email });
-  }, [activity_email]);
+  const [device_date, setDevice_date] = useState("");
+  const [device_month, setDevice_month] = useState("");
+  const [device_year, setDevice_yesr] = useState("");
+  const [owner_note, setOwner_note] = useState("");
+  const [employee_id, setEmployee_id] = useState("");
+  const [device_category_id, setDevice_category_id] = useState("");
+  const [id_device, setId_device] = useState("");
 
-  const getforjoin = async () => {
+  const range = (start, end) => {
+    const result = [];
+    for (let i = start; i < end; i++) {
+      result.push(i);
+    }
+    return result;
+  };
+
+  const getdate = async () => {
+    console.log('555');
+
     try {
-      const { data } = await axios.get("/DB/get/get/for/join");
+     
+      const { data } = await axios.post("/DB/startdate",{ 
 
-      //console.log('help',data.admin_name)
-      setData(data);
+          startDate: startDate,
+          endDate: endDate,
+
+    })
+    setDevice(data)
     } catch (error) {}
   };
 
   useEffect(() => {
-    getActivity2();
+    getDevice();
   }, []);
 
-  const getActivity2 = async () => {
+  const getDevice = async () => {
     try {
-      const { data } = await axios.get("/DB/get/get/for/join");
-
-      //console.log('help',data.admin_name)
-      setActivity(data);
+      const { data } = await axios.get("/DB/tbl_device");
+      // console.log(data.length)
+      setDevice(data);
     } catch (error) {}
   };
   const onReset2 = () => {
     form2.resetFields();
-    getActivity2();
+    getDevice();
   };
 
-  const onReset = () => {
-    form2.resetFields();
-    getforjoin();
-  };
+  //   const onReset = () => {
+  //     form2.resetFields();
+  //     getforjoin();
+  //   };
   const headers = [
-    { label: "id", key: "id" },
-    { label: "employee_name", key: "employee_name" },
-    { label: "employee_email", key: "employee_email" },
-    { label: "device_id", key: "device_id" },
-    { label: "device_serial", key: "device_serial" },
+    { label: "Device id", key: "device_id" },
+    { label: "device_name", key: "device_name" },
+    { label: "device_warranty", key: "device_warranty" },
+    { label: "device_producer", key: "device_producer" },
+    { label: "device_cost", key: "device_cost" },
+    { label: "device_note", key: "device_note" },
     { label: "device_model", key: "device_model" },
-
-    { label: "case_detail", key: "case_detail" },
-    { label: "priority", key: "priority" },
-    { label: "status", key: "status" },
-    { label: "admin_name", key: "admin_name" },
+    { label: "device_serial", key: "device_serial" },
+    { label: "device_asset_tag", key: "device_asset_tag" },
   ];
   //edit 16/04/2023
   const onFinish = async (values) => {
@@ -134,57 +168,39 @@ const Activityreport = () => {
 
   //edit 17/04/2023
   const onFinish2 = (value) => {
-    console.log("fillter", value);
-    console.log("activity", activity);
-    //console.log('value.admin_id',admin_id);
-    //console.log('typeof value.id',typeof value.id)
+    console.log("filter", value);
+    console.log("device", Device);
 
-    if (value.status === undefined) {
-      const act = activity.filter(
-        (act) => act.priority && act.priority.split(" ")[0] === value.priority
+    if (value.date !== undefined) {
+      const emp = Device.filter(
+        (emp) =>
+          emp.device_year === Number(value.date.format("YYYY")) &&
+          emp.device_month.split(" ")[0] === value.date.format("MMMM")
       );
-      setActivity(act);
-      //console.log("emp.activityid", value.id);
-      console.log("name_undefine", act);
-      console.log("แต๋มสวย");
-      // alert(`${Admin}`)
-    } else if (value.priority === undefined) {
-      const act = activity.filter(
-        (act) => act.status && act.status.split(" ")[0] === value.status
-      );
-      setActivity(act);
-      console.log("id undefind", act);
-      console.log("แต๋มขี้เหล่");
-    } else if (value.priority !== undefined && value.status !== undefined) {
-      const act1 = activity.filter(
-        (act1) =>
-          act1.priority.split(" ")[0] === value.priority &&
-          act1.status.split(" ")[0] === value.status
-      );
-      setActivity(act1);
-      console.log("1", act1);
+      setDevice(emp);
+      console.log("filtered device", emp);
     }
   };
+  const onReset = () => {
+    form2.resetFields();
+    getDevice();
+  };
+
+  // useEffect(() => {
+  //   getDevice();
+  // }, []);
+
+  // const getDevice = async () => {
+  //   try {
+  //     const { data } = await axios.get("/DB/tbl_device");
+  //     // console.log(data.length)
+  //     setDevice(data);
+  //   } catch (error) {}
+  // };
   //edit 17/04/2023
 
   //edit 17/04/2023
-  const getActivity = (values) => {
-    console.log("editstatus", editStatus);
-    console.log("editstatus", priority);
-    const { data } = axios
-      .get(`/DB/get/status/${editStatus}`)
-      .then((response) => {
-        const defaultValue = {
-          Priority: priority,
-          Status: Status,
-          Responsible: responsible,
-        };
-        console.log("222", defaultValue);
-        setInitialValues(defaultValue);
-      });
-    showModal();
-    setOpen(true);
-  };
+
   //edit 17/04/2023
 
   const getID = (values) => {
@@ -236,24 +252,6 @@ const Activityreport = () => {
     console.log("click", e);
   };
 
-  const items = [
-    {
-      label: <a onClick={getActivity}>edit</a>,
-      key: "0",
-      icon: <EditOutlined />,
-    },
-    {
-      label: <a onClick={() => setForsendEmail(true)}>send email</a>,
-      key: "1",
-      icon: <MailOutlined />,
-    },
-  ];
-
-  const menuProps = {
-    items,
-    onClick: handleMenuClick,
-  };
-
   const showModal = () => {
     setOpen(true);
   };
@@ -292,13 +290,83 @@ const Activityreport = () => {
       },
     },
   };
+  // const generatePDF = useReactToPrint({
+  //   content: () => conponentPDF.current,
+  //   documentTitle: "Activity Report",
+  //   onAfterPrint: () => alert("data save in PDF"),
+  // });
+  // const generatePDF = {
+  //   content: () => conponentPDF.current,
+  //   documentTitle: "Activity Report",
+  //   onAfterPrint: () => alert("data save in PDF"),
+  // };
+  //   const downloadPDF = (data) => {
+  //     console.log("data", data);
+  //     const doc = new jsPDF();
+
+  //     doc.text("Devices Report", 20, 10);
+  //     //const data = [getActivity2()];
+  //     const headers = [
+  //       [
+  //         "device_id",
+  //         "device_name",
+  //         "warranty",
+  //         "Producer",
+  //         "Cost",
+  //         "Note",
+  //         "Serial",
+  //         "Model",
+  //       ],
+  //     ];
+  //     var newDatas = [];
+  //     data.forEach((item) => {
+  //       var newData = [];
+  //       newData[0] = item["device_id"];
+  //       newData[1] = item["device_name"];
+  //       newData[2] = item["device_warranty"];
+  //       newData[3] = item["device_producer"];
+  //       newData[4] = item["device_cost"];
+  //       newData[5] = item["device_note"];
+  //       newData[6] = item["device_serial"];
+  //       newData[7] = item["deive_model"];
+
+  //       newDatas.push(newData);
+  //     });
+  //     console.log("newDatas", newDatas);
+  //     // columns={columns}
+  //     //               dataSource={activity}
+  //     //               rowKey={(record) => record.id}
+  //     autoTable(doc, {
+  //       // body: [
+  //       //   // { europe: "Sweden", america: "Canada", asia: "China" },
+  //       //   // { europe: "Norway", america: "Mexico", asia: "Japan" },
+  //       //   // { id: "test", employee_name: "Canada", device_id: "China" },
+  //       //   // { id: "Norway", employee_name: "Mexico", device_id: "Japan" },
+  //       //   { dataSource: { activity } },
+  //       // ],
+  //       head: headers,
+  //       body: newDatas,
+  //       // columns: [
+  //       //   { header: "id", dataKey: "id" },
+  //       //   { header: "employee_name", dataKey: "employee_name" },
+  //       //   { header: "device_id", dataKey: "device_id" },
+  //       //   { header: "device_serial", dataKey: "device_serial" },
+  //       //   { header: "device_model", dataKey: "device_model" },
+  //       //   { header: "case_detail", dataKey: "case_detail" },
+  //       //   { header: "status", dataKey: "status" },
+  //       //   { header: "admin_name", dataKey: "admin_name" },
+  //       // ],
+  //     });
+
+  //     doc.save("Devicesreport.pdf");
+  //   };
   const downloadPDF = (data) => {
     console.log("data", data);
     const doc = new jsPDF();
 
-    doc.addFont("THSarabunNew", "normal", "normal");
-    doc.setFont("THSarabunNew");
-    doc.text("Activity Report", 20, 10);
+    // doc.addFont("THSarabunNew", "normal", "normal");
+    // doc.setFont("THSarabunNew");
+    doc.text("Devices Report", 20, 10);
     //const data = [getActivity2()];
     const headers = [
       [
@@ -310,31 +378,26 @@ const Activityreport = () => {
         // "case_detail",
         // "status",
         // "admin_name",
-        "id",
         "device_id",
-        "device_serial",
-        "device_model",
+        "device_name",
+        "warranty",
+        "Producer",
+        "Cost",
+        "Note",
+        "Serial",
       ],
     ];
     var newDatas = [];
     data.forEach((item) => {
       var newData = [];
-      // newData[0] = item["id"];
-      // newData[1] = item["employee_name"];
-      // newData[2] = item["device_id"];
-      // newData[3] = item["device_serial"];
-      // newData[4] = item["device_model"];
-      // newData[5] = item["case_detail"];
-      // newData[6] = item["status"];
-      // newData[7] = item["admin_name"];
-      newData[0] = item["id"];
-      //newData[1] = item["employee_name"];
-      newData[1] = item["device_id"];
-      newData[2] = item["device_serial"];
-      newData[3] = item["device_model"];
-      //newData[5] = item["case_detail"];
-      //newData[6] = item["status"];
-      //newData[7] = item["admin_name"];
+      newData[0] = item["device_id"];
+      newData[1] = item["device_name"];
+      newData[2] = item["device_warranty"];
+      newData[3] = item["device_producer"];
+      newData[4] = item["device_cost"];
+      newData[5] = item["device_note"];
+      newData[6] = item["device_serial"];
+      //newData[7] = item["deive_model"];
       newDatas.push(newData);
     });
     console.log("newDatas", newDatas);
@@ -344,34 +407,60 @@ const Activityreport = () => {
       body: newDatas,
     });
 
-    doc.save("Activityreport.pdf");
+    doc.save("Devicesreport-CMMS.pdf");
   };
 
   const columns = [
     {
-      title: "ID",
-      dataIndex: "id",
+      title: "device_id",
+      dataIndex: "device_id",
 
       sorter: (a, b) => a.ID.length - b.ID.length,
     },
     {
-      title: "User",
-      dataIndex: "employee_name",
-      sorter: (a, b) => a.employee_name.length - b.employee_name.length,
-    },
-    {
-      title: "Email",
-      dataIndex: "employee_email",
-      sorter: (a, b) => a.employee_email.length - b.employee_email.length,
-    },
-    {
-      title: "Device_id",
-      dataIndex: "device_id",
-      sorter: (a, b) => a.device_id.length - b.device_id.length,
+      title: "device_name",
+      dataIndex: "device_name",
+      sorter: (a, b) => a.device_name.length - b.device_name.length,
     },
 
     {
-      title: "Device_serial",
+      title: "warranty",
+      dataIndex: "device_warranty",
+      sorter: (a, b) => a.device_warranty.length - b.device_warranty.length,
+    },
+
+    {
+      title: "Producer",
+      dataIndex: "device_producer",
+      sorter: (a, b) => a.device_producer.length - b.device_producer.length,
+    },
+
+    {
+      title: "Cost",
+      dataIndex: "device_cost",
+      sorter: (a, b) => a.device_cost.length - b.device_cost.length,
+    },
+
+    // {
+    //   title: 'Image',
+    //   dataIndex: 'device_image',
+    //   sorter: (a, b) => a.device_image.length - b.device_image.length,
+    // },
+
+    {
+      title: "Note",
+      dataIndex: "device_note",
+      sorter: (a, b) => a.device_note.length - b.device_note.length,
+    },
+
+    // {
+    //   title: 'Status',
+    //   dataIndex: 'device_status',
+    //   sorter: (a, b) => a.device_stautus.length - b.device_stautus.length,
+    // },
+
+    {
+      title: "Serial",
       dataIndex: "device_serial",
       sorter: (a, b) => a.device_serial.length - b.device_serial.length,
     },
@@ -383,52 +472,14 @@ const Activityreport = () => {
     },
 
     {
-      title: "Note",
-      dataIndex: "case_detail",
-      sorter: (a, b) => a.case_detail.length - b.case_detail.length,
-    },
-    //edit 16/04/2023
-    {
-      title: "Priority",
-      dataIndex: "priority",
-      render: (text, record) => (
-        <div>
-          <span
-            className={
-              text === "Hight"
-                ? "badge bg-inverse-danger"
-                : "badge bg-inverse-warning"
-            }
-          >
-            {text}
-          </span>
-        </div>
-      ),
+      title: "Asset Tag",
+      dataIndex: "device_asset_tag",
+      sorter: (a, b) => a.device_asset_tag.length - b.device_asset_tag.length,
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      render: (text, record) => (
-        <div>
-          <span
-            className={
-              text === "กำลังซ่อม"
-                ? "badge bg-inverse-warning"
-                : text === "ส่งคืนเครื่องเรียบร้อย"
-                ? "badge bg-inverse-success"
-                : "badge bg-inverse-blue"
-            }
-          >
-            {text}
-          </span>
-        </div>
-      ),
-    },
-    //edit 16/04/2023
-    {
-      title: "Responsible",
-      dataIndex: "admin_name",
-      sorter: (a, b) => a.case_detail.length - b.case_detail.length,
+      title: "Date",
+      dataIndex: "created_timestamp",
+      sorter: (a, b) => a.created_timestamp.length - b.created_timestamp.length,
     },
 
     // {
@@ -456,7 +507,7 @@ const Activityreport = () => {
       <Sidebar />
       <div className="page-wrapper">
         <Helmet>
-          <title>Activity</title>
+          <title>Devices Report</title>
           <meta name="description" content="Login page" />
         </Helmet>
         {/* Page Content */}
@@ -465,17 +516,17 @@ const Activityreport = () => {
           <div className="page-header">
             <div className="row align-items-center">
               <div className="col">
-                <h3 className="page-title">Activity</h3>
+                <h3 className="page-title">Devices Report</h3>
                 <ul className="breadcrumb">
                   <li className="breadcrumb-item">
-                    <Link to="/Page/admindashboard">Dashboard</Link>
+                    <Link to="/Page/admindashboard">Report</Link>
                   </li>
-                  <li className="breadcrumb-item active">Activity</li>
+                  <li className="breadcrumb-item active">Devices Report</li>
                 </ul>
               </div>
               <div className="col-sm-6 col-md-2">
                 <CSVLink
-                  data={activity}
+                  data={Device}
                   headers={headers}
                   filename="Activities Report.csv"
                 >
@@ -494,10 +545,10 @@ const Activityreport = () => {
               </div>
               <div className="col-sm-6 col-md-2">
                 <Button
-                  data={activity}
+                  data={Device}
                   type="primary"
                   //onClick={downloadPDF(activity)}
-                  onClick={() => downloadPDF(data)}
+                  onClick={() => downloadPDF(Device)}
                   shape="round"
                   className="btn add-btn"
                   data-bs-toggle="modal"
@@ -619,71 +670,25 @@ const Activityreport = () => {
             </div>
           </div>
 
-          <Form form={form2} name="control-hooks" onFinish={onFinish2}>
+          <Form
+            form={form2}
+            name="control-hooks"
+            onFinish={getdate}
+          >
             <div className="row filter-row">
-              <Form.Item
-                style={{
-                  marginBottom: 0,
-                }}
-              >
-                <Form.Item
-                  name="status"
-                  style={{
-                    display: "inline-block",
-                    width: "calc(50% - 8px)",
-                  }}
-                >
-                  {/* <input
-                    className="form-control floating"
-                    placeholder="Status"
-                  /> */}
-                  <Select
-                    //className="form-control floating"
-                    placeholder="Search export status"
-                  >
-                    <Option value="กำลังซ่อม">กำลังซ่อม</Option>
-                    <Option value="ซ่อมเสร็จแล้ว">ซ่อมเสร็จแล้ว</Option>
-                    <Option value="ส่งคืนเครื่องเรียบร้อย">ส่งคืนเครื่องเรียบร้อย</Option>
-                  </Select>
-                </Form.Item>
-                <Form.Item
-                  name="priority"
-                  style={{
-                    display: "inline-block",
-                    width: "calc(50% - 8px)",
-                    margin: "0 8px",
-                  }}
-                >
-                  {/* <input
-                    className="form-control floating"
-                    placeholder="Priority"
-                  /> */}
-                  <Select
-                    //className="form-control floating"
-                    placeholder="Search export priority"
-                  >
-                    <Option value="Hight">Hight</Option>
-                    <Option value="Normal">Normal</Option>
-                  </Select>
-                </Form.Item>
+              <Form.Item name="date">
+              <RangePicker style={{width:'100%'}}
+               onChange={(dates, dateStrings) => {
+                 setStartDate(dateStrings[0]);
+                 setEndDate(dateStrings[1]);
+               }}/>
               </Form.Item>
+
+             
             </div>
 
+
             <Form.Item>
-              {/* <CSVLink
-                data={activity}
-                headers={headers}
-                filename="Activities Report.csv"
-              >
-                <Button
-                  htmlType="button"
-                  className="btn btn-danger btn-block w-20 "
-                  style={{ marginLeft: "5px" }}
-                  //onClick={onReset}
-                >
-                  Export
-                </Button>
-              </CSVLink> */}
               <div className="col-sm-6 col-md-4" style={{ textAlign: "left" }}>
                 <Button
                   type="primary"
@@ -696,12 +701,10 @@ const Activityreport = () => {
                   htmlType="button"
                   className="btn btn-danger btn-block w-20 "
                   style={{ marginLeft: "5px" }}
-                  onClick={onReset2}
+                  onClick={onReset}
                 >
                   Reset
                 </Button>
-
-                <div></div>
               </div>
             </Form.Item>
           </Form>
@@ -735,7 +738,7 @@ const Activityreport = () => {
                   id="my-table"
                   className="table-striped"
                   pagination={{
-                    total: activity?.length,
+                    total: Device?.length,
                     showTotal: (total, range) =>
                       `Showing ${range[0]} to ${range[1]} of ${total} entries`,
                     showSizeChanger: true,
@@ -744,7 +747,7 @@ const Activityreport = () => {
                   }}
                   style={{ overflowX: "auto" }}
                   columns={columns}
-                  dataSource={activity}
+                  dataSource={Device}
                   rowKey={(record) => record.id}
                 />
               </div>
@@ -756,4 +759,4 @@ const Activityreport = () => {
   );
 };
 
-export default Activityreport;
+export default Assetreport;

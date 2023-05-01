@@ -78,6 +78,40 @@ function UploadImage() {
         });
       };
 
+      function resizeImage(file, maxWidth, maxHeight) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = event => {
+            const image = new Image();
+            image.src = event.target.result;
+            image.onload = () => {
+              let width = image.width;
+              let height = image.height;
+              if (width > maxWidth) {
+                height *= maxWidth / width;
+                width = maxWidth;
+              }
+              if (height > maxHeight) {
+                width *= maxHeight / height;
+                height = maxHeight;
+              }
+              const canvas = document.createElement('canvas');
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(image, 0, 0, width, height);
+              resolve(canvas.toDataURL(file.type));
+            };
+            image.onerror = error => {
+              reject(error);
+            };
+          };
+          reader.onerror = error => {
+            reject(error);
+          };
+        });
+      }
    
     const handleChnage=(e)=>{
         console.log(e.target.files)
@@ -197,40 +231,7 @@ function UploadImage() {
     );
 }
 
-function resizeImage(file, maxWidth, maxHeight) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = event => {
-        const image = new Image();
-        image.src = event.target.result;
-        image.onload = () => {
-          let width = image.width;
-          let height = image.height;
-          if (width > maxWidth) {
-            height *= maxWidth / width;
-            width = maxWidth;
-          }
-          if (height > maxHeight) {
-            width *= maxHeight / height;
-            height = maxHeight;
-          }
-          const canvas = document.createElement('canvas');
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(image, 0, 0, width, height);
-          resolve(canvas.toDataURL(file.type));
-        };
-        image.onerror = error => {
-          reject(error);
-        };
-      };
-      reader.onerror = error => {
-        reject(error);
-      };
-    });
-  }
+
   
 
 export default UploadImage;

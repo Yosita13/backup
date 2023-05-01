@@ -218,7 +218,21 @@ const Deviceslist = ({ Asset, getDevice }) => {
     setMenu(!menu);
   };
 
-
+  pdfMake.vfs = pdfFonts.pdfMake.vfs;
+    pdfMake.fonts = {
+    THSarabunNew: {
+      normal: 'THSarabunNew.ttf',
+      bold: 'THSarabunNew-Bold.ttf',
+      italics: 'THSarabunNew-Italic.ttf',
+      bolditalics: 'THSarabunNew-BoldItalic.ttf'
+    },
+    Roboto: {
+      normal: 'Roboto-Regular.ttf',
+      bold: 'Roboto-Medium.ttf',
+      italics: 'Roboto-Italic.ttf',
+      bolditalics: 'Roboto-MediumItalic.ttf'
+    }
+  }
 
 
   const getQRcode = (values) => {
@@ -253,7 +267,9 @@ const Deviceslist = ({ Asset, getDevice }) => {
   const dataRows = [  ["Device name ", defaultValue.device_name],
     ["Model", defaultValue.device_model],
     ["Asset tag", defaultValue.device_asset_tag],
-    ["Serial number", defaultValue.device_serial]
+    ["Serial number", defaultValue.device_serial],
+    // ["ผู้รับผิดชอบ", defaultValue.employee_name]
+   
   ];
   
   // Generate QR code data URL
@@ -277,7 +293,8 @@ const Deviceslist = ({ Asset, getDevice }) => {
             margin: [10, 0, 0, 0],
             table: {
               body: dataRows
-            }
+            },
+            font:"THSarabunNew"
           }
         ]
       }

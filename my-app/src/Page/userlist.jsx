@@ -29,7 +29,7 @@ import { Form, Input, Select, Row, DatePicker } from "antd";
 
 const { Option } = Select;
 
-const Userlist = ({ User,getUsers }) => {
+const Userlist = ({ User,getEmployee}) => {
   const [menu, setMenu] = useState(false);
   const [open, setOpen] = useState(false);
   // const [Admin, setAdmin] = useState([])
@@ -62,6 +62,7 @@ const Userlist = ({ User,getUsers }) => {
         //console.log('123',response.data.admin_name);
         console.log(response.data);
         setDataEmployee(response.data);
+        form.setFieldsValue(response.data)
         const defaultValue = {
           employee_id: response.data.employee_id,
           employee_name: response.data.employee_name,
@@ -98,7 +99,7 @@ const Userlist = ({ User,getUsers }) => {
       );
       // console.log(data.length)
       //alert('success!!')
-      getUsers()
+      getEmployee()
     } catch (error) {}
   };
 
@@ -285,7 +286,7 @@ const Userlist = ({ User,getUsers }) => {
       >
         {initialValues && (
           <Form
-            initialValues={initialValues}
+           // initialValues={initialValues}
             {...formItemLayout}
             form={form}
             name="Save"
