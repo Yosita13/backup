@@ -451,7 +451,7 @@ router.get ("/getDataDevice/:device_id" ,(req,res,next) => {
 router.get("/getCountStatus/", (req, res, next) => {
  
   connect.query(
-    "SELECT SUM(CASE WHEN status='success' THEN 1 ELSE 0 END) AS success_count, SUM(CASE WHEN status='In Progress' THEN 1 ELSE 0 END) AS progress_count, SUM(CASE WHEN status='Complete' THEN 1 ELSE 0 END) AS complete_count FROM tbl_repair",
+    "SELECT SUM(CASE WHEN status='ซ่อมเสร็จแล้ว' THEN 1 ELSE 0 END) AS success_count, SUM(CASE WHEN status='กำลังซ่อม' THEN 1 ELSE 0 END) AS progress_count, SUM(CASE WHEN status='ส่งคืนเครื่องเรียบร้อย' THEN 1 ELSE 0 END) AS complete_count FROM tbl_repair",
     (err, rows) => {
       if (err) {
         res.send(err);
@@ -899,19 +899,22 @@ router.delete("/deleteUser/:employee_id", (req, res) => {
 
   //--------------------------------------------------------------Devices---------------------------------------------------
 //get Devices
-// router.get("/tbl_device", async (req, res, next) => {
-//   try {
-//     connect.query("SELECT * FROM tbl_device WHERE device_status <> 'Not Available' ORDER BY device_id DESC", (err, rows) => {
-//       if (err) {
-//         res.send(err);
-//       } else {
-//         res.send(rows);
-//       }
-//     });
-//   } catch (e) {
-//     res.send(e);
-//   }
-// });
+router.get("/CountTbl_device", async (req, res, next) => {
+  try {
+    connect.query("SELECT SUM(CASE WHEN device_status='In use' THEN 1 ELSE 0 END) AS Inuse_count, SUM(CASE WHEN device_status='Available' THEN 1 ELSE 0 END) AS Available_count, SUM(CASE WHEN device_status='Not Available' THEN 1 ELSE 0 END) AS Not_count FROM tbl_device",
+    (err, rows) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.send(rows[0]);
+      }
+    });
+  } catch (e) {
+    res.send(e);
+  }
+});
+
+
 router.get("/tbl_device", async (req, res, next) => {
   try {
     connect.query("SELECT * FROM tbl_device WHERE device_status <> 'Not Available' ORDER BY device_id DESC",

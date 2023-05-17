@@ -10,6 +10,8 @@ import { useReactToPrint } from "react-to-print";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 //import "../path/to/thai/font.css";
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
 import {
   Form,
   Input,
@@ -51,6 +53,11 @@ const Activityreport = () => {
   const [options, setOptions] = useState([]);
   const location = useLocation();
   const conponentPDF = useRef();
+  const [lengthRepair, setLengthRepair] = useState();
+  const [success_count, setSuccess_count] = useState();
+  const [progress_count, setProgress_count] = useState();
+  const [complete_count, setComplete_count] = useState();
+
 
   //console.log('data is ', data)
 
@@ -76,8 +83,30 @@ const Activityreport = () => {
 
       //console.log('help',data.admin_name)
       setData(data);
+      setLengthRepair(data.length)
     } catch (error) {}
   };
+
+  useEffect(() => {
+    getCountStatus()
+  })
+
+  //getCountStatus
+  const getCountStatus = async () => {
+    try {
+      const { data } = await axios.get('/DB/getCountStatus')
+
+     
+      setSuccess_count(data.success_count)
+      setProgress_count(data.progress_count)
+      setComplete_count(data.complete_count)
+      
+
+    } catch (error) {
+
+    }
+  }
+
 
   useEffect(() => {
     getActivity2();
@@ -292,59 +321,103 @@ const Activityreport = () => {
       },
     },
   };
-  const downloadPDF = (data) => {
-    console.log("data", data);
-    const doc = new jsPDF();
 
-    doc.addFont("THSarabunNew", "normal", "normal");
-    doc.setFont("THSarabunNew");
-    doc.text("Activity Report", 20, 10);
-    //const data = [getActivity2()];
-    const headers = [
-      [
-        // "id",
-        // "employee_name",
-        // "device_id",
-        // "device_serial",
-        // "device_model",
-        // "case_detail",
-        // "status",
-        // "admin_name",
-        "id",
-        "device_id",
-        "device_serial",
-        "device_model",
-      ],
-    ];
-    var newDatas = [];
+  pdfMake.vfs = pdfFonts.pdfMake.vfs;
+  pdfMake.fonts = {
+    THSarabunNew: {
+      normal: 'THSarabunNew.ttf',
+      bold: 'THSarabunNew-Bold.ttf',
+      italics: 'THSarabunNew-Italic.ttf',
+      bolditalics: 'THSarabunNew-BoldItalic.ttf'
+    },
+    Roboto: {
+      normal: 'Roboto-Regular.ttf',
+      bold: 'Roboto-Medium.ttf',
+      italics: 'Roboto-Italic.ttf',
+      bolditalics: 'Roboto-MediumItalic.ttf'
+    }
+  }
+  const downloadPDF = (data) => {
+    const dataRows = [[
+     
+      "เจ้าของเครื่อง",
+      "device_id",
+      "ซีเรียล",
+      "โมเดลของเครื่อง",
+      "รายละเอียด",
+      "Priority",
+      "Status",
+      "ชื่อผู้รับผิดชอบ"
+
+    ]
+  ];
     data.forEach((item) => {
       var newData = [];
-      // newData[0] = item["id"];
-      // newData[1] = item["employee_name"];
-      // newData[2] = item["device_id"];
-      // newData[3] = item["device_serial"];
-      // newData[4] = item["device_model"];
-      // newData[5] = item["case_detail"];
-      // newData[6] = item["status"];
-      // newData[7] = item["admin_name"];
-      newData[0] = item["id"];
-      //newData[1] = item["employee_name"];
+      
+      
+      newData[0] = item["employee_name"];
       newData[1] = item["device_id"];
       newData[2] = item["device_serial"];
       newData[3] = item["device_model"];
-      //newData[5] = item["case_detail"];
-      //newData[6] = item["status"];
-      //newData[7] = item["admin_name"];
-      newDatas.push(newData);
-    });
-    console.log("newDatas", newDatas);
-
-    autoTable(doc, {
-      head: headers,
-      body: newDatas,
+      newData[4] = item["case_detail"];
+      newData[5] = item["priority"];
+      newData[6] = item["status"];
+      newData[7] = item["admin_name"];
+      dataRows.push(newData);
+      console.log(dataRows);
     });
 
-    doc.save("Activityreport.pdf");
+    //pdfmake
+    const docDefinition = {
+      pageOrientation: 'landscape',
+      defaultStyle: {
+        font: 'THSarabunNew'
+      },
+      content: [
+        // Add header with colored background
+        {
+          text: 'My Header',
+          margin: [0, 0, 0, 10],
+          color: 'white',
+          fillColor: 'blue',
+          fontSize: 20,
+          bold: true,
+          alignment: 'center'
+        },
+        // Add table with colored background
+        {
+          table: {
+            headerRows: 1,
+            widths: '*',
+            body: dataRows
+          },
+          layout: {
+            fillColor: function (rowIndex, node, columnIndex) {
+              return (rowIndex === 0) ? '#CCCCCC' : null;
+            }
+          }
+        },
+        {
+          margin: [10, 10, 0, 10],
+          text: `สรุปรายละเอียดการแจ้งซ่อม: ${lengthRepair} รายการ
+          สถานะกำลังซ่อม ${progress_count} รายการ
+          สถานะซ่อมเสร็จแล้ว ${success_count} รายการ
+          สถานะส่งคืนเครื่องเรียบร้อย ${complete_count} รายการ`,
+          //alignment: 'center',
+          fontSize: 14
+        }
+      ],
+      header: {
+        margin: [20, 10, 0, 0],
+        text: 'ตารางแสดงรายละเอียดการแจ้งซ่อม',
+        fontSize: 14,
+        bold: true,
+        alignment: 'center'
+      }
+      
+    };
+    
+    pdfMake.createPdf(docDefinition).download();
   };
 
   const columns = [
@@ -406,23 +479,17 @@ const Activityreport = () => {
       ),
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      render: (text, record) => (
+      title: 'Status',
+      dataIndex: 'status',
+      render: (text, record) =>
         <div>
-          <span
-            className={
-              text === "กำลังซ่อม"
-                ? "badge bg-inverse-warning"
-                : text === "ส่งคืนเครื่องเรียบร้อย"
-                ? "badge bg-inverse-success"
-                : "badge bg-inverse-blue"
-            }
-          >
-            {text}
-          </span>
+          <span className={
+            text === "กำลังซ่อม" ? "badge bg-inverse-warning" :
+              text === "ส่งคืนเครื่องเรียบร้อย" ? "badge bg-inverse-success" :
+                "badge bg-inverse-blue"
+          }>{text}</span>
         </div>
-      ),
+
     },
     //edit 16/04/2023
     {
@@ -710,7 +777,6 @@ const Activityreport = () => {
         <div className={`main-wrapper ${menu ? "slide-nav" : ""}`}>
           <Header onMenuClick={(value) => toggleMobileMenu()} />
           <Sidebar />
-
           <div className="row">
             <div className="col-md-12">
               <div className="table-responsive">

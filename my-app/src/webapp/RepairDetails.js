@@ -33,6 +33,8 @@ function RepairDetails() {
     console.log('location', location.state);
     console.log('Devicr_id', location.id);
 
+    const id_device = location.id;
+    console.log(id_device);
 
 
 
@@ -71,7 +73,7 @@ function RepairDetails() {
                 device_id: location.id,
                 employee_name: employee_name
             })
-            history.push({ pathname: '/webapp/sendRepairFinish' })
+            history.push({ pathname: '/webapp/sendRepairFinish' ,id_device })
             //sendNoti();
         } catch (e) {
 

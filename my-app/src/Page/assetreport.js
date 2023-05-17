@@ -9,7 +9,8 @@ import Sidebar from "../initialpage/Sidebar/sidebar";
 import { useReactToPrint } from "react-to-print";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
 //import "../path/to/thai/font.css";
 import {
   Form,
@@ -69,10 +70,10 @@ const Assetreport = () => {
   const [created_timestamp, setCreated_timestamp] = useState("");
   const [updated_timestamp, setUpdated_timestamp] = useState("");
   const [device_note, setdevice_note] = useState("");
-  const [device_status, setdevice_status] = useState("");
-  const [datadevice, setDatadevice] = useState();
-  //const [initialValues, setInitialValues] = useState();
-  const [newPassword, setNewPassword] = useState();
+  const [lengthDevice, setLengthDevice] = useState();
+  const [Inuse_count, setInuse_count] = useState();
+  const [Available_count, setAvailable_count] = useState();
+  const [Not_count, setNot_count] = useState();
   const [Device, setDevice] = useState([]);
 
   //-----
@@ -110,9 +111,11 @@ const Assetreport = () => {
 
           startDate: startDate,
           endDate: endDate,
+          
 
     })
     setDevice(data)
+    
     } catch (error) {}
   };
 
@@ -125,6 +128,7 @@ const Assetreport = () => {
       const { data } = await axios.get("/DB/tbl_device");
       // console.log(data.length)
       setDevice(data);
+      setLengthDevice(data.length)
     } catch (error) {}
   };
   const onReset2 = () => {
@@ -186,22 +190,25 @@ const Assetreport = () => {
     getDevice();
   };
 
-  // useEffect(() => {
-  //   getDevice();
-  // }, []);
+  useEffect(() => {
+    getCountStatus()
+  })
 
-  // const getDevice = async () => {
-  //   try {
-  //     const { data } = await axios.get("/DB/tbl_device");
-  //     // console.log(data.length)
-  //     setDevice(data);
-  //   } catch (error) {}
-  // };
-  //edit 17/04/2023
+  //getCountStatus
+  const getCountStatus = async () => {
+    try {
+      const { data } = await axios.get('/DB/CountTbl_device')
 
-  //edit 17/04/2023
+     
+      setInuse_count(data.Inuse_count)
+      setAvailable_count(data.Available_count)
+      setNot_count(data.Not_count)
+      
 
-  //edit 17/04/2023
+    } catch (error) {
+
+    }
+  }
 
   const getID = (values) => {
     console.log("value", values);
@@ -290,125 +297,107 @@ const Assetreport = () => {
       },
     },
   };
-  // const generatePDF = useReactToPrint({
-  //   content: () => conponentPDF.current,
-  //   documentTitle: "Activity Report",
-  //   onAfterPrint: () => alert("data save in PDF"),
-  // });
-  // const generatePDF = {
-  //   content: () => conponentPDF.current,
-  //   documentTitle: "Activity Report",
-  //   onAfterPrint: () => alert("data save in PDF"),
-  // };
-  //   const downloadPDF = (data) => {
-  //     console.log("data", data);
-  //     const doc = new jsPDF();
+ 
 
-  //     doc.text("Devices Report", 20, 10);
-  //     //const data = [getActivity2()];
-  //     const headers = [
-  //       [
-  //         "device_id",
-  //         "device_name",
-  //         "warranty",
-  //         "Producer",
-  //         "Cost",
-  //         "Note",
-  //         "Serial",
-  //         "Model",
-  //       ],
-  //     ];
-  //     var newDatas = [];
-  //     data.forEach((item) => {
-  //       var newData = [];
-  //       newData[0] = item["device_id"];
-  //       newData[1] = item["device_name"];
-  //       newData[2] = item["device_warranty"];
-  //       newData[3] = item["device_producer"];
-  //       newData[4] = item["device_cost"];
-  //       newData[5] = item["device_note"];
-  //       newData[6] = item["device_serial"];
-  //       newData[7] = item["deive_model"];
-
-  //       newDatas.push(newData);
-  //     });
-  //     console.log("newDatas", newDatas);
-  //     // columns={columns}
-  //     //               dataSource={activity}
-  //     //               rowKey={(record) => record.id}
-  //     autoTable(doc, {
-  //       // body: [
-  //       //   // { europe: "Sweden", america: "Canada", asia: "China" },
-  //       //   // { europe: "Norway", america: "Mexico", asia: "Japan" },
-  //       //   // { id: "test", employee_name: "Canada", device_id: "China" },
-  //       //   // { id: "Norway", employee_name: "Mexico", device_id: "Japan" },
-  //       //   { dataSource: { activity } },
-  //       // ],
-  //       head: headers,
-  //       body: newDatas,
-  //       // columns: [
-  //       //   { header: "id", dataKey: "id" },
-  //       //   { header: "employee_name", dataKey: "employee_name" },
-  //       //   { header: "device_id", dataKey: "device_id" },
-  //       //   { header: "device_serial", dataKey: "device_serial" },
-  //       //   { header: "device_model", dataKey: "device_model" },
-  //       //   { header: "case_detail", dataKey: "case_detail" },
-  //       //   { header: "status", dataKey: "status" },
-  //       //   { header: "admin_name", dataKey: "admin_name" },
-  //       // ],
-  //     });
-
-  //     doc.save("Devicesreport.pdf");
-  //   };
+  pdfMake.vfs = pdfFonts.pdfMake.vfs;
+  pdfMake.fonts = {
+    THSarabunNew: {
+      normal: 'THSarabunNew.ttf',
+      bold: 'THSarabunNew-Bold.ttf',
+      italics: 'THSarabunNew-Italic.ttf',
+      bolditalics: 'THSarabunNew-BoldItalic.ttf'
+    },
+    Roboto: {
+      normal: 'Roboto-Regular.ttf',
+      bold: 'Roboto-Medium.ttf',
+      italics: 'Roboto-Italic.ttf',
+      bolditalics: 'Roboto-MediumItalic.ttf'
+    }
+  }
   const downloadPDF = (data) => {
-    console.log("data", data);
-    const doc = new jsPDF();
+    const dataRows = [[
+     
+      "ID",
+      "name",
+      "Producer",
+      "Status",
+      "Note",
+      "Serial",
+      "Model",
+      "Type"
 
-    // doc.addFont("THSarabunNew", "normal", "normal");
-    // doc.setFont("THSarabunNew");
-    doc.text("Devices Report", 20, 10);
-    //const data = [getActivity2()];
-    const headers = [
-      [
-        // "id",
-        // "employee_name",
-        // "device_id",
-        // "device_serial",
-        // "device_model",
-        // "case_detail",
-        // "status",
-        // "admin_name",
-        "device_id",
-        "device_name",
-        "warranty",
-        "Producer",
-        "Cost",
-        "Note",
-        "Serial",
-      ],
-    ];
-    var newDatas = [];
+    ]
+  ];
     data.forEach((item) => {
       var newData = [];
+      
+      
       newData[0] = item["device_id"];
       newData[1] = item["device_name"];
-      newData[2] = item["device_warranty"];
-      newData[3] = item["device_producer"];
-      newData[4] = item["device_cost"];
-      newData[5] = item["device_note"];
-      newData[6] = item["device_serial"];
-      //newData[7] = item["deive_model"];
-      newDatas.push(newData);
-    });
-    console.log("newDatas", newDatas);
-
-    autoTable(doc, {
-      head: headers,
-      body: newDatas,
+      newData[2] = item["device_producer"];
+      newData[3] = item["device_status"];
+      newData[4] = item["device_note"];
+      newData[5] = item["device_serial"];
+      newData[6] = item["device_model"];
+      newData[7] = item["device_type"];
+      dataRows.push(newData);
+      console.log(dataRows);
     });
 
-    doc.save("Devicesreport-CMMS.pdf");
+    //pdfmake
+    const docDefinition = {
+      pageOrientation: 'landscape',
+      defaultStyle: {
+        font: 'THSarabunNew'
+      },
+      content: [
+        // Add header with colored background
+        {
+          text: 'My Header',
+          margin: [0, 0, 0, 10],
+          color: 'white',
+          fillColor: 'blue',
+          fontSize: 20,
+          bold: true,
+          alignment: 'center'
+        },
+        // Add table with colored background
+        {
+          table: {
+            headerRows: 1,
+            widths: '*',
+            body: dataRows
+          },
+          layout: {
+            fillColor: function (rowIndex, node, columnIndex) {
+              return (rowIndex === 0) ? '#CCCCCC' : null;
+            }
+          }
+        },
+        {
+          margin: [10, 10, 0, 10],
+          text: `สรุปรายละเอียดอุปกรณ์: ${lengthDevice} รายการ
+          สถานะ In Use ${Inuse_count} รายการ
+          สถานะ Available ${Available_count} รายการ`,
+          // สถานะ Not Available ${Not_count} รายการ`,
+          //alignment: 'center',
+          fontSize: 14
+        }
+      ],
+      header: {
+        margin: [20, 10, 0, 0],
+        text: 'ตารางแสดงรายละเอียดของอุปกรณ์',
+        fontSize: 14,
+        bold: true,
+        alignment: 'center'
+      }
+    };
+    
+    pdfMake.createPdf(docDefinition).download();
   };
+
+
+  
 
   const columns = [
     {
@@ -482,22 +471,7 @@ const Assetreport = () => {
       sorter: (a, b) => a.created_timestamp.length - b.created_timestamp.length,
     },
 
-    // {
-    //   title: "Action",
-    //   render: (value) => (
-    //     <>
-    //       <Dropdown
-    //         menu={menuProps}
-    //         placement="bottomRight"
-    //         trigger={["click"]}
-    //       >
-    //         <Button type="text" onClick={() => getID(value)}>
-    //           <MoreOutlined />
-    //         </Button>
-    //       </Dropdown>
-    //     </>
-    //   ),
-    // },
+   
   ];
 
   return (
@@ -608,35 +582,7 @@ const Assetreport = () => {
                         >
                           <Input />
                         </Form.Item>
-                        {/* <Row>
-                    <Col span={6} offset={1}>
-                        <div className="text-left mt-2">
-                            <Button
-                                ghost
-                                type="primary"
-                                className="mr-2"
-                                onClick={hideModal2}
-
-                                htmlType="submit"
-                                // disabled={disableForm || loadingButton}
-                            >
-                                Cancel
-                            </Button>
-                        </div>
-                    </Col>
-                    <Col span={12} offset={4}>
-                        <div className="text-right mt-2">
-                            <Button 
-                                type="primary"
-                                htmlType="submit"
-                                // disabled={disableForm || loadingButton}
-                            >
-                                APPLY
-                            </Button>
-                        </div>
-                    </Col>
-
-                </Row> */}
+                       
                       </Form>
                     </div>
 

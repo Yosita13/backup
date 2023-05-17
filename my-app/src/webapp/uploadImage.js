@@ -16,7 +16,7 @@ function UploadImage() {
 
     const location = useLocation()
     const id = location.state
-    //console.log('ID of user', location.state);
+    console.log('ID of user', id);
     const [isSucces, setSuccess] = useState(null);
     const [picture, setPicture] = useState({
         file: [],
@@ -124,14 +124,6 @@ function UploadImage() {
           .catch(error => {
             console.error(error);
           });
-
-        // const data = new FileReader()
-
-        // data.addEventListener('load',()=>{
-        //     setImgs(data.result)
-        // })
-
-        // data.readAsDataURL(e.target.files[0])
      
     }
    

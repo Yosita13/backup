@@ -6,8 +6,13 @@ import { Helmet } from "react-helmet";
 import { useHistory } from 'react-router-dom';
 import LogoOnlineAssest from '../initialpage/Sidebar/img/LogoOnlineAssest.png';
 import { CheckCircleOutlined } from '@ant-design/icons';
+import { Button, Col, Modal, Space , Alert,Popconfirm} from "antd";
 import WebappHeader from './webappHeader';
 import complete from './imgWebapp/complete.svg';
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
+import html2canvas from "html2canvas";
+
 
 
 function SendRepairFinish() {
@@ -15,130 +20,133 @@ function SendRepairFinish() {
     let history = useHistory()
     const [imageID, setImageID] = useState("");
     const location = useLocation()
+    const [data, setData] = useState()
+    const [device_id, setDevice_id] = useState("");
+    const [device_name, setdevice_name] = useState("");
+    const [initialValues, setInitialValues] = useState();
+    const [qrCodeClicked, setQrCodeClicked] = useState(false);
+   
 
-    const id = location.state
 
+    const id = location.id_device
     console.log(id);
 
-
-    console.log('ID of user', location.state);
-
-    // const [isSucces, setSuccess] = useState(null);
-
-    // const [picture, setPicture] = useState({
-    //     file: [],
-    //     filepreview: null,
-    // });
-
-    // const [userInfo, setuserInfo] = useState({
-    //     file: [],
-    //     filepreview: null,
-    // });
-
-    // const [postImage, setPostImage] = useState({
-    //     myFile: "",
-    // });
+    pdfMake.vfs = pdfFonts.pdfMake.vfs;
+    pdfMake.fonts = {
+    THSarabunNew: {
+      normal: 'THSarabunNew.ttf',
+      bold: 'THSarabunNew-Bold.ttf',
+      italics: 'THSarabunNew-Italic.ttf',
+      bolditalics: 'THSarabunNew-BoldItalic.ttf'
+    },
+    Roboto: {
+      normal: 'Roboto-Regular.ttf',
+      bold: 'Roboto-Medium.ttf',
+      italics: 'Roboto-Italic.ttf',
+      bolditalics: 'Roboto-MediumItalic.ttf'
+    }
+  }
 
 
-    const createImage = (newImage) => console.log('newimg', newImage);;
+  const getQRcode = (values) => {
+    axios
+      .get(`/DB/getQR/${id}`)
+      .then((response) => {
+        console.log('123',id);
+        console.log(response.data);
+        // setData(response.data);
+        setData(id);
+        const defaultValue = {
+          device_id: response.data.device_id,
+          device_name: response.data.device_name,
+          device_model: response.data.device_model,
+          device_serial: response.data.device_serial,
+          device_asset_tag: response.data.device_asset_tag,
+          employee_name: response.data.employee_name
+        };
+        console.log(device_name);
+        //console.log('222',defaultValue);
+        setInitialValues(defaultValue);
+        console.log(defaultValue);
+        generatePDF(defaultValue);
+      });
+      
+    // setOpen2(true);
+  };
 
-    // const createPost = async (post) => {
-    //     try {
-    //         await createImage(post);
-    //     } catch (error) {
-    //         console.log(error.message);
-    //     }
-    // };
+  const generatePDF = (defaultValue) => {
+    // Define the PDF document content
+  // Define data rows
+  const dataRows = [  ["Device name ", defaultValue.device_name],
+    ["Model", defaultValue.device_model],
+    ["Asset tag", defaultValue.device_asset_tag],
+    ["Serial number", defaultValue.device_serial],
+    // ["ผู้รับผิดชอบ", defaultValue.employee_name]
+   
+  ];
+  
+  // Generate QR code data URL
+  const qrCodeUrl = defaultValue.device_id;
+  const qrCodeSize = 100;
+  
+  // Define PDF document definition
+  const docDefinition = {
+    content: [
+      {
+        columns: [
+          // Define QR code cell in left column
+          {
+            width: qrCodeSize + 10,
+            qr: qrCodeUrl.toString(),
+            alignment: "center"
+          },
+          // Define data cells in right column
+          {
+            width: "*",
+            margin: [10, 0, 0, 0],
+            table: {
+              body: dataRows
+            },
+            font:"THSarabunNew"
+          }
+        ]
+      }
+    ]
+  };
+  
+    // Generate the PDF and open it in a new tab
+    pdfMake.createPdf(docDefinition).download();
+  };
 
-    // const handleSubmit = (e) => {
-    //     // axios.post("http://localhost:5000/DB/tbl_list_repair2", postImage)
-    //     // .then(res=>console.log(res))
-    //     // e.preventDefault();
-    //     console.log('postImage', postImage);
+  const handleGetQRCode = () => {
+    setQrCodeClicked(true);
+    // call getQRcode function
+  }
 
-    //     var blob = new Blob(['1678684514063-8853042000109.jpg'], { type: 'image/jpeg' });
-    //     var blobUrl = URL.createObjectURL(blob);
-    //     console.log('blob', blob);
-    //     console.log('blobURL', blobUrl);
-    //     setPicture({
-    //         ...picture,
-    //         file: blob,
-    //         filepreview: blobUrl,
-    //     });
-    //     setPicture(blobUrl);
-    //     createPost(postImage);
+  
 
-    // };
-    // console.log('pic', picture);
-    // console.log('useinfo', userInfo);
-
-    // const convertToBase64 = (file) => {
-    //     console.log('file', file);
-    //     return new Promise((resolve, reject) => {
-    //         const fileReader = new FileReader();
-    //         fileReader.readAsDataURL(file);
-    //         fileReader.onload = () => {
-    //             resolve(fileReader.result);
-    //         };
-    //         fileReader.onerror = (error) => {
-    //             reject(error);
-    //         };
-    //     });
-    // };
+  const handleOkClick = () => {
+    if (!qrCodeClicked) {
+      const result = window.confirm(
+        "คุณต้องการสิ้นสุดการแจ้งซ่อม โดยไม่ดาวน์โหลด QR code เพื่อตรวจสอบสถานะการซ่อม ?"
+      );
+      if (result) {
+        // ตกลงให้ไปหน้าอื่นได้เลย
+        window.location.href = "/webapp/userhome";
+      } else {
+        // ไม่ตกลงให้อยู่หน้าเดิม
+      }
+    } else {
+      // หากเคยกด QR แล้วก็ให้ไปหน้าอื่นได้เลย
+      
+      window.location.href = "/webapp/userhome";
+    }
+  }
 
 
 
-    // const handleInputChange = async (event) => {
-    //     setuserInfo({
-    //         ...userInfo,
-    //         file: event.target.files[0],
-    //         filepreview: URL.createObjectURL(event.target.files[0]),
-    //     });
-    //     console.log('event', event.target.files[0]);
 
-    //     const file = event.target.files[0];
-    //     console.log('file0', file);
-    //     const base64 = await convertToBase64(file);
-    //     setPostImage({ ...postImage, myFile: base64 });
-
-    // }
-
-
-
-    // const submit = async () => {
-    //     const formdata = new FormData();
-    //     var blob = new Blob([userInfo], { type: 'image/jpeg' });
-    //     var blobUrl = URL.createObjectURL(blob);
-    //     console.log('blob', blob);
-    //     console.log('blobURL', blobUrl);
-    //     formdata.append('avatar', userInfo.file);
-    //     formdata.append('id', id);
-    //     const image = { headers: { "Content-Type": "multipart/form-data" } }
-
-    //     console.log('id');
-
-    //     // axios.post("http://localhost:5000/DB/tbl_list_repair2", blobUrl, image)
-    //     axios.post("/DB/tbl_list_repair2", {
-    //         body: {
-    //             userInfo,
-    //             id
-    //         }
-    //     })
-    //         .then(res => { // then print response status
-    //             console.warn(res);
-    //             console.log('res', res)
-    //             setImageID(res.data.insertId)
-    //             if (res.data.success === 1) {
-    //                 setSuccess("Image upload successfully");
-    //             }
-    //             // console.log('res.data',res.data);
-    //             // const file = new Blob ([res.data],{type:'image/jpeg'})
-
-    //             history.push({ pathname: '/webapp/RepairDetails', state: res.data.insertId })
-    //         })
-
-    //     //history.push({pathname:'/webapp/RepairDetails',state:imageID})
-    // }
+  
 
     return (
 
@@ -170,6 +178,31 @@ function SendRepairFinish() {
                                                                 <img src={complete} style={{width:280}}/><br></br><br></br>
                                                                
                                                                     <h2>ส่งเรื่องแจ้งซ่อมสำเร็จ</h2>
+                                                                    {/* <h4>สามารถดาวน์โหลด QR Code เพื่อตรวจสอบสถานะการซ่อม</h4> */}
+                                                                    <Alert message="สามารถดาวน์โหลด QR Code ไว้เพื่อตรวจสอบสถานะการซ่อม" type="warning" />
+                                                            {/* <Space
+                                                                direction="vertical"
+                                                                style={{
+                                                                    width: '100%',
+                                                                    height : '100%'
+                                                                }}
+                                                            >
+                                                                <Alert
+                                                                    message="อะไรซักอย่าง"
+                                                                    description="ตกลงกดตกลง ไม่ตกลงก็ไปไกลๆ"
+                                                                    type="info"
+                                                                    action={
+                                                                        <Space direction="vertical">
+                                                                            <Button size="small" type="primary">
+                                                                                Accept
+                                                                            </Button>
+                                                                            <Button size="small" danger type="ghost">
+                                                                                Decline
+                                                                            </Button>
+                                                                        </Space>
+                                                                    }
+                                                                    closable
+                                                                /></Space> */}
                                                                     {/* <span>ส่งเรื่องแจ้งซ่อมสำเร็จ</span> */}
                                                                 </div>
                                                             </div>
@@ -187,17 +220,28 @@ function SendRepairFinish() {
 
 
 
-                                                <div style={{ marginTop: '5px' }} className="submit-section">
-                                                    <div className="form-row">
+                                                        <div style={{ marginTop: "5px" }} className="submit-section">
+                                                            <div className="form-row">
+                                                                <button
+                                                                    className="btn btn-greensushi submit-btn"
+                                                                    type="submit"
+                                                                    onClick={getQRcode}
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#add_device"
+                                                                >
+                                                                    <i className="fa fa-plus" /> Download QR Code
+                                                                </button>
 
-                                                        <Link to={{
+                                                                
+                                                                
+                                                                <Link to={{
                                                             pathname: "/webapp/userhome",
-                                                            state: location.state
+                                                            state: location.id_device
                                                         }}>
-                                                            <button type="submit" className="btn btn-greensushi submit-btn"  > OK </button></Link>
-
-                                                    </div>
-                                                </div>
+                                                            <button type="submit" className="btn btn-gray-1000 submit-btn"  > OK </button></Link>
+                                                                
+                                                            </div>
+                                                        </div>
                                             </div>
 
 
